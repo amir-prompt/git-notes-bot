@@ -50,11 +50,39 @@ function createProgressBar(value, total, width = 20) {
  */
 function formatAIAuthorship(note) {
     try {
-        const data = JSON.parse(note);
+        // Extract file paths from the beginning of the note
+        const lines = note.split('\n');
+        const filePaths = [];
+        let jsonStartIndex = 0;
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line === '---' || line.startsWith('{')) {
+                jsonStartIndex = i;
+                break;
+            }
+            if (line && !line.match(/^[a-f0-9\s\-]+$/)) {
+                // This looks like a file path (not just hex/numbers/dashes)
+                filePaths.push(line.split(/\s+/)[0]);
+            }
+        }
+        // Extract JSON from note
+        const jsonMatch = note.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            return `\`\`\`\n${note}\n\`\`\`\n\n`;
+        }
+        const data = JSON.parse(jsonMatch[0]);
         if (!data.prompts) {
             return `\`\`\`\n${note}\n\`\`\`\n\n`;
         }
         let output = '';
+        // Show affected files
+        if (filePaths.length > 0) {
+            output += `#### 📁 Files Modified\n\n`;
+            for (const filepath of filePaths) {
+                output += `- \`${filepath}\`\n`;
+            }
+            output += `\n`;
+        }
         for (const [promptId, prompt] of Object.entries(data.prompts)) {
             // AI Agent Info
             output += `#### 🤖 AI Assistant\n\n`;
@@ -63,6 +91,22 @@ function formatAIAuthorship(note) {
                 output += `- **Model:** ${prompt.agent_id.model || 'Unknown'}\n`;
             }
             output += `- **Human Author:** ${prompt.human_author || 'Unknown'}\n\n`;
+            // AI vs Human Contribution Bar
+            const totalLines = (prompt.total_additions || 0);
+            const aiLines = (prompt.accepted_lines || 0);
+            const humanLines = totalLines - aiLines;
+            const humanPercent = totalLines > 0 ? Math.round((humanLines / totalLines) * 100) : 0;
+            const aiPercent = totalLines > 0 ? Math.round((aiLines / totalLines) * 100) : 0;
+            const barWidth = 40;
+            const humanWidth = totalLines > 0 ? Math.round((humanLines / totalLines) * barWidth) : 0;
+            const aiWidth = barWidth - humanWidth;
+            output += `#### 👥 Authorship\n\n`;
+            output += `\`\`\`\n`;
+            output += `you  ${'█'.repeat(humanWidth)}${'░'.repeat(aiWidth)} ai\n`;
+            output += `     ${humanPercent}%${' '.repeat(barWidth - humanPercent.toString().length - aiPercent.toString().length - 1)}${aiPercent}%\n`;
+            const acceptanceRate = totalLines > 0 ? Math.round((aiLines / totalLines) * 100) : 0;
+            output += `     ${acceptanceRate}% AI code accepted\n`;
+            output += `\`\`\`\n\n`;
             // Code Statistics
             const totalChanges = (prompt.total_additions || 0) + (prompt.total_deletions || 0);
             output += `#### 📊 Code Changes\n\n`;

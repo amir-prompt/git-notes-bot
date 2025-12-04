@@ -1,2 +1,68 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 15:28:22 UTC
+test_new.txt
+  b41a02feee42f05e 1-6,8-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "60d15ee2b5812874eb99f0483d3f0fbe7e2f74de",
+  "prompts": {
+    "b41a02feee42f05e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "11230fb1-e9dd-44cb-b4d3-a32037127c65",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "create test_new file",
+          "timestamp": "2025-12-04T15:27:05.134Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll create a `test_new.txt` file for you in the workspace root.",
+          "timestamp": "2025-12-04T15:27:16.072Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "write",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test_new.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "I've created an empty `test_new.txt` file in your workspace root. If you'd like me to add any specific content to it, just let me know!",
+          "timestamp": "2025-12-04T15:27:22.612Z"
+        },
+        {
+          "type": "user",
+          "text": "add some content",
+          "timestamp": "2025-12-04T15:27:31.487Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll add some sample content to the `test_new.txt` file.",
+          "timestamp": "2025-12-04T15:27:35.947Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "write",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test_new.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "I've added some sample content to `test_new.txt` with a basic structure including a description and bullet points for testing purposes. Feel free to modify it as needed!",
+          "timestamp": "2025-12-04T15:27:43.152Z"
+        }
+      ],
+      "total_additions": 9,
+      "total_deletions": 0,
+      "accepted_lines": 9,
+      "overriden_lines": 0
+    }
+  }
+}

@@ -11,6 +11,21 @@ The system works in 3 steps:
 
 ## Quick Start
 
+### ⚠️ Important: Syncing Notes to GitHub
+
+**Git notes are stored locally and must be pushed to GitHub separately.**
+
+If you don't push notes, you'll see different authorship percentages:
+- **Local terminal**: Shows updated percentages (e.g., 90% AI)
+- **GitHub PR**: Shows outdated percentages (e.g., 100% AI)
+
+**Solution**: Run the auto-sync setup (recommended):
+```bash
+./setup-auto-push-notes.sh
+```
+
+This installs a git hook that automatically pushes notes whenever you `git push`, keeping GitHub in sync!
+
 ### Method 1: Automatic (Post-Commit Hook)
 
 The post-commit hook will automatically add a note to every commit:

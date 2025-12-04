@@ -6,10 +6,30 @@ Sample test cases:
 1. Test case one - basic functionality
 2. Test case two - edge cases
 3. Test case three - error handling
+4. Test case four - null value handling
+5. Test case five - boundary conditions
+6. Test case six - performance validation
+7. Test case seven - integration testing
 
 Test data:
 - Input: "hello world"
 - Expected output: "Hello World"
+- Status: PASS
+
+- Input: ""
+- Expected output: ""
+- Status: PASS
+
+- Input: "ALREADY UPPERCASE"
+- Expected output: "Already Uppercase"
+- Status: PASS
+
+- Input: null
+- Expected output: null
+- Status: PASS
+
+- Input: "123 test"
+- Expected output: "123 Test"
 - Status: PASS
 
 Notes:

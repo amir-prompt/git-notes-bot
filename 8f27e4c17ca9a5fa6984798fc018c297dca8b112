@@ -1,2 +1,58 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 14:55:15 UTC
+test.txt
+  681ea6b50943c1a9 39-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "8f27e4c17ca9a5fa6984798fc018c297dca8b112",
+  "prompts": {
+    "681ea6b50943c1a9": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6c492f41-beef-4ef5-b457-1e0264b7cdd6",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "add some contstnt to text.txt",
+          "timestamp": "2025-12-04T14:54:40.082Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll read the current content of `test.txt` and then add some content to it.",
+          "timestamp": "2025-12-04T14:54:45.434Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "I'll add some additional content to `test.txt` to expand on the existing test structure:",
+          "timestamp": "2025-12-04T14:54:51.053Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "search_replace",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Done! I've added content to `test.txt` including:\n\n- **Additional test scenarios** (cases 8-10) covering concurrent operations, timeout handling, and data validation\n- **Extended test data** with two pending test cases for edge cases like multiple spaces and special characters\n- **Test environment** section specifying platform and version requirements\n- **Best practices** section with guidelines for running and maintaining tests\n\nThe new content follows the existing structure and adds useful testing documentation.",
+          "timestamp": "2025-12-04T14:55:02.778Z"
+        }
+      ],
+      "total_additions": 25,
+      "total_deletions": 0,
+      "accepted_lines": 25,
+      "overriden_lines": 0
+    }
+  }
+}

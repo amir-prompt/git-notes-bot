@@ -24,13 +24,27 @@ interface AIAuthorshipNote {
         text?: string;
         timestamp?: string;
         name?: string;
+        // Future: line_ranges?: Array<{ start: number, end: number, file: string }>;
       }>;
       total_additions?: number;
       total_deletions?: number;
       accepted_lines?: number;
       overriden_lines?: number;
+      // Future: file_line_map?: { [filepath: string]: number[] };
     };
   };
+}
+
+interface FileAIInfo {
+  filepath: string;
+  aiPercent: number;
+  acceptedLines: number;
+  totalLines: number;
+  model?: string;
+  tool?: string;
+  commitSha?: string;
+  promptId?: string;
+  userPrompt?: string;  // The actual user message that created this
 }
 
 /**
@@ -41,6 +55,36 @@ function createProgressBar(value: number, total: number, width: number = 20): st
   const filled = Math.round((value / total) * width);
   const empty = width - filled;
   return `[${'█'.repeat(filled)}${'░'.repeat(empty)}] ${percentage.toFixed(0)}%`;
+}
+
+/**
+ * Creates a circular pie chart representation using Unicode
+ */
+function createPieChart(percentage: number): string {
+  // Use circle emojis to represent pie chart
+  if (percentage >= 87.5) return '🟢'; // 7/8 - 8/8
+  if (percentage >= 75) return '🔵'; // 6/8 - 7/8
+  if (percentage >= 62.5) return '🟡'; // 5/8 - 6/8
+  if (percentage >= 50) return '🟠'; // 4/8 - 5/8
+  if (percentage >= 37.5) return '🟠'; // 3/8 - 4/8
+  if (percentage >= 25) return '🔴'; // 2/8 - 3/8
+  if (percentage >= 12.5) return '🔴'; // 1/8 - 2/8
+  return '⚪'; // 0 - 1/8
+}
+
+/**
+ * Creates a visual donut chart for AI vs Human contributions
+ */
+function createDonutChart(aiPercent: number): string {
+  const blocks = ['⬜', '🟦', '🟦', '🟦', '🟦'];
+  const steps = Math.round(aiPercent / 25);
+  return '```\n' +
+    '     AI vs Human\n' +
+    '    ┌─────────┐\n' +
+    `    │ ${aiPercent}% AI  │\n` +
+    '    └─────────┘\n' +
+    `    ${'🤖'.repeat(Math.min(steps, 5))}${'👤'.repeat(Math.max(0, 5 - steps))}\n` +
+    '```';
 }
 
 /**
@@ -93,6 +137,76 @@ function formatDuration(startTime: string, endTime: string): string {
   } catch {
     return 'N/A';
   }
+}
+
+/**
+ * Extracts file-level AI information from notes with prompt context
+ */
+function extractFileAIInfo(note: string, commitSha: string): FileAIInfo[] {
+  const fileInfos: FileAIInfo[] = [];
+  
+  try {
+    // Extract file paths from the beginning of the note
+    const lines = note.split('\n');
+    const filePaths: string[] = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line === '---' || line.startsWith('{')) {
+        break;
+      }
+      if (line && !line.match(/^[a-f0-9\s\-]+$/)) {
+        filePaths.push(line.split(/\s+/)[0]);
+      }
+    }
+    
+    // Extract JSON from note
+    const jsonMatch = note.match(/\{[\s\S]*\}/);
+    if (!jsonMatch || filePaths.length === 0) {
+      return fileInfos;
+    }
+    
+    const data: AIAuthorshipNote = JSON.parse(jsonMatch[0]);
+    if (!data.prompts) {
+      return fileInfos;
+    }
+    
+    // Get aggregate stats for these files
+    for (const [promptId, prompt] of Object.entries(data.prompts)) {
+      const totalLines = prompt.total_additions || 0;
+      const acceptedLines = prompt.accepted_lines || 0;
+      const aiPercent = totalLines > 0 ? Math.round((acceptedLines / totalLines) * 100) : 0;
+      
+      // Extract the first user message as the initiating prompt
+      let userPrompt = '';
+      if (prompt.messages && prompt.messages.length > 0) {
+        const firstUserMsg = prompt.messages.find(m => m.type === 'user');
+        if (firstUserMsg && firstUserMsg.text) {
+          // Truncate to first 100 chars for inline display
+          userPrompt = firstUserMsg.text.length > 100 
+            ? firstUserMsg.text.substring(0, 100) + '...' 
+            : firstUserMsg.text;
+        }
+      }
+      
+      // Associate this info with all files in this commit
+      for (const filepath of filePaths) {
+        fileInfos.push({
+          filepath,
+          aiPercent,
+          acceptedLines,
+          totalLines,
+          model: prompt.agent_id?.model,
+          tool: prompt.agent_id?.tool,
+          commitSha,
+          promptId,
+          userPrompt
+        });
+      }
+    }
+  } catch {}
+  
+  return fileInfos;
 }
 
 /**
@@ -177,23 +291,51 @@ function formatAIAuthorship(note: string): string {
       const aiWidth = barWidth - humanWidth;
       
       output += `#### 👥 Authorship\n\n`;
+      output += `<table><tr><td>\n\n`;
       output += `\`\`\`\n`;
-      output += `you  ${'█'.repeat(humanWidth)}${'░'.repeat(aiWidth)} ai\n`;
-      output += `     ${humanPercent}%${' '.repeat(barWidth - humanPercent.toString().length - aiPercent.toString().length - 1)}${aiPercent}%\n`;
+      output += `┌────────────────────────────────────────┐\n`;
+      output += `│  you  ${'█'.repeat(humanWidth)}${'░'.repeat(aiWidth)} ai  │\n`;
+      output += `│       ${humanPercent}%${' '.repeat(barWidth - humanPercent.toString().length - aiPercent.toString().length - 1)}${aiPercent}%       │\n`;
+      output += `├────────────────────────────────────────┤\n`;
       
       const acceptanceRate = totalLines > 0 ? Math.round((aiLines / totalLines) * 100) : 0;
-      output += `     ${acceptanceRate}% AI code accepted\n`;
+      output += `│   ${createPieChart(acceptanceRate)} ${acceptanceRate}% AI code accepted        │\n`;
+      output += `└────────────────────────────────────────┘\n`;
       output += `\`\`\`\n\n`;
+      output += `</td><td>\n\n`;
+      
+      // Add visual representation
+      const aiIconCount = Math.round(aiPercent / 10);
+      const humanIconCount = Math.round(humanPercent / 10);
+      output += `**Visual Breakdown**\n\n`;
+      output += `🤖 AI: ${'▓'.repeat(aiIconCount)}${'░'.repeat(10 - aiIconCount)}\n\n`;
+      output += `👤 You: ${'▓'.repeat(humanIconCount)}${'░'.repeat(10 - humanIconCount)}\n\n`;
+      output += `</td></tr></table>\n\n`;
 
-      // Code Statistics
+      // Code Statistics with enhanced visuals
       const totalChanges = (prompt.total_additions || 0) + (prompt.total_deletions || 0);
       output += `#### 📊 Code Changes\n\n`;
-      output += `| Metric | Count | Visualization |\n`;
-      output += `|--------|-------|---------------|\n`;
-      output += `| ➕ Additions | ${prompt.total_additions || 0} | ${createProgressBar(prompt.total_additions || 0, totalChanges)} |\n`;
-      output += `| ➖ Deletions | ${prompt.total_deletions || 0} | ${createProgressBar(prompt.total_deletions || 0, totalChanges)} |\n`;
-      output += `| ✅ Accepted | ${prompt.accepted_lines || 0} | ${createProgressBar(prompt.accepted_lines || 0, prompt.total_additions || 1)} |\n`;
-      output += `| 🔄 Overridden | ${prompt.overriden_lines || 0} | ${createProgressBar(prompt.overriden_lines || 0, prompt.total_additions || 1)} |\n\n`;
+      output += `<table>\n`;
+      output += `<tr><th>Metric</th><th>Count</th><th>Visualization</th><th>Impact</th></tr>\n`;
+      
+      const addPercent = totalChanges > 0 ? ((prompt.total_additions || 0) / totalChanges * 100).toFixed(0) : 0;
+      const delPercent = totalChanges > 0 ? ((prompt.total_deletions || 0) / totalChanges * 100).toFixed(0) : 0;
+      const accPercent = (prompt.total_additions || 0) > 0 ? ((prompt.accepted_lines || 0) / (prompt.total_additions || 1) * 100).toFixed(0) : 0;
+      const ovPercent = (prompt.total_additions || 0) > 0 ? ((prompt.overriden_lines || 0) / (prompt.total_additions || 1) * 100).toFixed(0) : 0;
+      
+      output += `<tr><td>➕ Additions</td><td><b>${prompt.total_additions || 0}</b></td><td>${createProgressBar(prompt.total_additions || 0, totalChanges)}</td><td>🟢 ${addPercent}%</td></tr>\n`;
+      output += `<tr><td>➖ Deletions</td><td><b>${prompt.total_deletions || 0}</b></td><td>${createProgressBar(prompt.total_deletions || 0, totalChanges)}</td><td>🔴 ${delPercent}%</td></tr>\n`;
+      output += `<tr><td>✅ Accepted</td><td><b>${prompt.accepted_lines || 0}</b></td><td>${createProgressBar(prompt.accepted_lines || 0, prompt.total_additions || 1)}</td><td>💚 ${accPercent}%</td></tr>\n`;
+      output += `<tr><td>🔄 Overridden</td><td><b>${prompt.overriden_lines || 0}</b></td><td>${createProgressBar(prompt.overriden_lines || 0, prompt.total_additions || 1)}</td><td>🟡 ${ovPercent}%</td></tr>\n`;
+      output += `</table>\n\n`;
+      
+      // Add a sparkline summary
+      output += `**Change Pattern:** `;
+      const pattern = totalChanges > 0 ? 
+        `${'▁'.repeat(Math.min(3, Math.round((prompt.total_deletions || 0) / totalChanges * 10)))}` +
+        `${'▃'.repeat(Math.min(3, Math.round((prompt.accepted_lines || 0) / totalChanges * 10)))}` +
+        `${'▅'.repeat(Math.min(3, Math.round((prompt.overriden_lines || 0) / totalChanges * 10)))}` : '▁';
+      output += `\`${pattern}\` (deletions → accepted → modified)\n\n`;
 
       // Conversation Summary
       if (prompt.messages && prompt.messages.length > 0) {
@@ -240,6 +382,69 @@ function formatAIAuthorship(note: string): string {
 }
 
 /**
+ * Calculates aggregate statistics from all notes
+ */
+function calculateAggregateStats(notes: GitNote[]): {
+  totalAdditions: number;
+  totalDeletions: number;
+  totalAccepted: number;
+  totalOverridden: number;
+  avgAIPercent: number;
+  totalFiles: Set<string>;
+  commitCount: number;
+} {
+  let totalAdditions = 0;
+  let totalDeletions = 0;
+  let totalAccepted = 0;
+  let totalOverridden = 0;
+  let aiPercentSum = 0;
+  let validCommits = 0;
+  const totalFiles = new Set<string>();
+
+  for (const { note } of notes) {
+    try {
+      const lines = note.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line === '---' || line.startsWith('{')) break;
+        if (line && !line.match(/^[a-f0-9\s\-]+$/)) {
+          totalFiles.add(line.split(/\s+/)[0]);
+        }
+      }
+
+      const jsonMatch = note.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const data: AIAuthorshipNote = JSON.parse(jsonMatch[0]);
+        if (data.prompts) {
+          for (const prompt of Object.values(data.prompts)) {
+            totalAdditions += prompt.total_additions || 0;
+            totalDeletions += prompt.total_deletions || 0;
+            totalAccepted += prompt.accepted_lines || 0;
+            totalOverridden += prompt.overriden_lines || 0;
+            
+            const lines = prompt.total_additions || 0;
+            if (lines > 0) {
+              aiPercentSum += ((prompt.accepted_lines || 0) / lines) * 100;
+              validCommits++;
+            }
+          }
+        }
+      }
+    } catch {}
+  }
+
+  return {
+    totalAdditions,
+    totalDeletions,
+    totalAccepted,
+    totalOverridden,
+    avgAIPercent: validCommits > 0 ? aiPercentSum / validCommits : 0,
+    totalFiles,
+    commitCount: notes.length
+  };
+}
+
+/**
  * Formats git notes into a markdown comment for the PR
  */
 function formatNotesAsComment(notes: GitNote[], notesRef: string): string {
@@ -247,11 +452,50 @@ function formatNotesAsComment(notes: GitNote[], notesRef: string): string {
     return '';
   }
 
-  let comment = `## 🤖 AI Authorship Report\n\n`;
-  comment += `*AI contributions from \`${notesRef}\`*\n\n`;
+  const stats = calculateAggregateStats(notes);
 
+  let comment = `## 🤖 AI Authorship Report\n\n`;
+  
+  // Add visual summary card
+  comment += `<div align="center">\n\n`;
+  comment += `### 📊 Summary Dashboard\n\n`;
+  comment += `\`\`\`\n`;
+  comment += `╔═══════════════════════════════════════════════════════════╗\n`;
+  comment += `║                    PR STATISTICS                          ║\n`;
+  comment += `╠═══════════════════════════════════════════════════════════╣\n`;
+  comment += `║  📝 Commits: ${stats.commitCount.toString().padEnd(10)} 📁 Files: ${stats.totalFiles.size.toString().padEnd(16)} ║\n`;
+  comment += `║  ➕ Added: ${stats.totalAdditions.toString().padEnd(12)} ➖ Removed: ${stats.totalDeletions.toString().padEnd(13)} ║\n`;
+  comment += `║  ✅ Accepted: ${stats.totalAccepted.toString().padEnd(9)} 🔄 Modified: ${stats.totalOverridden.toString().padEnd(11)} ║\n`;
+  comment += `╠═══════════════════════════════════════════════════════════╣\n`;
+  comment += `║            🤖 AI Contribution: ${Math.round(stats.avgAIPercent)}%${' '.repeat(19 - Math.round(stats.avgAIPercent).toString().length)}║\n`;
+  comment += `║            ${createProgressBar(stats.totalAccepted, stats.totalAdditions, 30).padEnd(39)}║\n`;
+  comment += `╚═══════════════════════════════════════════════════════════╝\n`;
+  comment += `\`\`\`\n\n`;
+  comment += `</div>\n\n`;
+
+  comment += `*Details from \`${notesRef}\`*\n\n`;
+
+  // Add timeline if multiple commits
+  if (notes.length > 1) {
+    comment += `### 📅 Commit Timeline\n\n`;
+    comment += `\`\`\`\n`;
+    for (let i = 0; i < notes.length; i++) {
+      const { commitSha } = notes[i];
+      const shortSha = commitSha.substring(0, 7);
+      const isLast = i === notes.length - 1;
+      comment += `${isLast ? '└─' : '├─'} 📝 ${shortSha}\n`;
+      if (!isLast) comment += `│\n`;
+    }
+    comment += `\`\`\`\n\n`;
+  }
+
+  // Individual commit details
+  comment += `## 📋 Detailed Breakdown\n\n`;
+  
   for (const { commitSha, note } of notes) {
     const shortSha = commitSha.substring(0, 7);
+    // Add anchor for linking from inline comments
+    comment += `<a name="commit-${shortSha}"></a>\n\n`;
     comment += `### 📝 Commit \`${shortSha}\`\n\n`;
     comment += formatAIAuthorship(note);
   }
@@ -328,12 +572,142 @@ async function postComment(
   core.info('Created new comment');
 }
 
+/**
+ * Adds inline review comments to PR files that were AI-modified
+ * Links back to the specific prompts that created the changes
+ */
+async function addInlineComments(
+  octokit: ReturnType<typeof github.getOctokit>,
+  owner: string,
+  repo: string,
+  prNumber: number,
+  notes: GitNote[]
+): Promise<void> {
+  try {
+    // Extract all file AI info from notes
+    const fileAIMap = new Map<string, FileAIInfo>();
+    
+    for (const { note, commitSha } of notes) {
+      const fileInfos = extractFileAIInfo(note, commitSha);
+      for (const info of fileInfos) {
+        // Keep the highest AI percentage if file appears multiple times
+        const existing = fileAIMap.get(info.filepath);
+        if (!existing || info.aiPercent > existing.aiPercent) {
+          fileAIMap.set(info.filepath, info);
+        }
+      }
+    }
+
+    if (fileAIMap.size === 0) {
+      core.info('No file-level AI info found for inline comments');
+      return;
+    }
+
+    // Get PR files to find which files are in the diff
+    const { data: prFiles } = await octokit.rest.pulls.listFiles({
+      owner,
+      repo,
+      pull_number: prNumber
+    });
+
+    // Build review comments for matching files
+    const comments: Array<{
+      path: string;
+      body: string;
+      line: number;
+    }> = [];
+
+    for (const prFile of prFiles) {
+      const aiInfo = fileAIMap.get(prFile.filename);
+      if (!aiInfo || aiInfo.aiPercent === 0) {
+        continue;
+      }
+
+      // Create a comment on the first line of the file's changes
+      // GitHub API requires us to comment on a line that was changed
+      const targetLine = prFile.additions > 0 ? 1 : prFile.changes;
+      
+      if (targetLine > 0) {
+        const emoji = aiInfo.aiPercent >= 80 ? '🤖' : aiInfo.aiPercent >= 50 ? '🔵' : '🟡';
+        const toolInfo = aiInfo.tool && aiInfo.model ? ` (${aiInfo.tool}/${aiInfo.model})` : '';
+        const shortSha = aiInfo.commitSha ? aiInfo.commitSha.substring(0, 7) : '';
+        
+        let commentBody = `${emoji} **AI-Modified File** - ${aiInfo.aiPercent}% AI contribution${toolInfo}\n\n`;
+        commentBody += `📊 ${aiInfo.acceptedLines} of ${aiInfo.totalLines} AI-suggested lines accepted\n\n`;
+        
+        // Add link to the commit details with conversation
+        if (shortSha) {
+          commentBody += `🔗 [View full conversation and details for commit \`${shortSha}\`](#commit-${shortSha})\n\n`;
+        }
+        
+        // Add the user prompt that created this
+        if (aiInfo.userPrompt) {
+          commentBody += `💬 **Original Prompt:**\n> ${aiInfo.userPrompt}\n\n`;
+        }
+        
+        commentBody += `---\n*💡 Click the commit link above to see the complete AI conversation and detailed statistics*`;
+        
+        comments.push({
+          path: prFile.filename,
+          line: targetLine,
+          body: commentBody
+        });
+      }
+    }
+
+    if (comments.length === 0) {
+      core.info('No matching files found for inline comments');
+      return;
+    }
+
+    // Check if we already have a review with these comments
+    const { data: existingReviews } = await octokit.rest.pulls.listReviews({
+      owner,
+      repo,
+      pull_number: prNumber
+    });
+
+    const botReview = existingReviews.find(review => 
+      review.body?.includes('🤖 AI-Modified Files')
+    );
+
+    if (botReview) {
+      core.info(`Found existing review ${botReview.id}, skipping inline comments to avoid duplicates`);
+      return;
+    }
+
+    // Create a review with inline comments
+    await octokit.rest.pulls.createReview({
+      owner,
+      repo,
+      pull_number: prNumber,
+      event: 'COMMENT',
+      body: '🤖 **AI-Modified Files Review**\n\n' +
+            'This PR includes AI-generated code. See inline comments on each file for:\n' +
+            '- 💬 The original prompt that created the changes\n' +
+            '- 📊 AI contribution statistics\n' +
+            '- 🔗 Links to full conversation details\n\n' +
+            '*Scroll down to the main bot comment for complete conversation history and detailed breakdown.*',
+      comments: comments.map(c => ({
+        path: c.path,
+        body: c.body,
+        line: c.line
+      }))
+    });
+
+    core.info(`Added ${comments.length} inline comment(s) to AI-modified files with prompt links`);
+  } catch (error) {
+    core.warning(`Failed to add inline comments: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 async function run(): Promise<void> {
   try {
     // Get inputs
     const token = core.getInput('github-token', { required: true });
     const notesRef = core.getInput('notes-ref') || 'refs/notes/commits';
     const updateExisting = core.getInput('update-existing') === 'true';
+    const addInlineCommentsFlag = core.getInput('add-inline-comments') === 'true';
 
     // Get PR context
     const context = github.context;
@@ -353,6 +727,7 @@ async function run(): Promise<void> {
     core.info(`Base SHA: ${baseSha}`);
     core.info(`Head SHA: ${headSha}`);
     core.info(`Notes ref: ${notesRef}`);
+    core.info(`Inline comments: ${addInlineCommentsFlag ? 'enabled' : 'disabled'}`);
 
     // Fetch git notes from remote
     core.info('Fetching git notes from remote...');
@@ -383,6 +758,12 @@ async function run(): Promise<void> {
     });
 
     core.info('Successfully posted git notes to PR');
+
+    // Add inline comments if enabled
+    if (addInlineCommentsFlag) {
+      core.info('Adding inline comments to AI-modified files...');
+      await addInlineComments(octokit, owner, repo, prNumber, notes);
+    }
 
   } catch (error) {
     if (error instanceof Error) {

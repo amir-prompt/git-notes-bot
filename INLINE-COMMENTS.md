@@ -1,0 +1,271 @@
+# Inline PR Comments Feature 🤖
+
+## Overview
+
+This feature adds **inline review comments** directly on AI-modified files in your GitHub Pull Request's "Files changed" view. Each comment shows:
+
+- 🤖 AI contribution percentage for that file
+- 💬 The original user prompt that created the changes
+- 📊 Statistics on accepted vs suggested lines
+- 🔗 Link to the full conversation and detailed breakdown
+
+## How It Works
+
+When enabled, the bot will:
+
+1. **Analyze** which files were AI-modified based on git notes
+2. **Create inline comments** on the first changed line of each AI-modified file
+3. **Link back** to the detailed conversation in the main PR comment
+4. **Show the prompt** that initiated the AI changes
+
+### Visual Example
+
+In your PR's "Files changed" tab, you'll see comments like:
+
+```
+🤖 AI-Modified File - 85% AI contribution (cursor/claude-sonnet-4)
+
+📊 34 of 40 AI-suggested lines accepted
+
+🔗 View full conversation and details for commit `abc1234`
+
+💬 Original Prompt:
+> Add user authentication with JWT tokens and password hashing
+
+---
+💡 Click the commit link above to see the complete AI conversation and detailed statistics
+```
+
+## Enabling Inline Comments
+
+### Option 1: Update Your Workflow File
+
+Edit `.github/workflows/git-notes-comment.yml`:
+
+```yaml
+- name: Post Git Notes
+  uses: amir-prompt/git-notes-bot@main
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    add-inline-comments: true  # 👈 Add this line
+```
+
+### Option 2: Full Example
+
+```yaml
+name: Post Git Notes to PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  post-notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch git notes
+        run: |
+          git fetch origin 'refs/notes/*:refs/notes/*' || true
+
+      - name: Post Git Notes with Inline Comments
+        uses: amir-prompt/git-notes-bot@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          notes-ref: refs/notes/commits
+          update-existing: true
+          add-inline-comments: true  # 👈 Enable inline comments
+```
+
+## Benefits
+
+### 1. **Immediate Context**
+See AI contribution right where the code changed, without scrolling to comments.
+
+### 2. **Prompt Visibility**
+Understand *why* the AI made these changes by seeing the original prompt.
+
+### 3. **Easy Navigation**
+Click links to jump directly to full conversation history and detailed stats.
+
+### 4. **Review Efficiency**
+Reviewers can quickly identify AI-modified files and assess changes faster.
+
+### 5. **Transparency**
+Clear markers show which files had AI assistance and to what degree.
+
+## Features
+
+### Smart File Matching
+- Only comments on files actually changed in the PR
+- Matches git note file paths to PR diff files
+- Avoids duplicate comments on subsequent pushes
+
+### AI Percentage Indicators
+- 🤖 80%+ AI contribution → Robot emoji
+- 🔵 50-79% AI contribution → Blue circle
+- 🟡 < 50% AI contribution → Yellow circle
+
+### Linked Navigation
+- Inline comments link to anchor tags in the main PR comment
+- Click to jump directly to the full conversation for that commit
+- See all messages, tool uses, and detailed statistics
+
+### Future-Ready
+The code is prepared for **line-level prompt mapping** when Git AI adds that capability:
+
+```typescript
+// Already in the interface, ready for future use:
+interface AIAuthorshipNote {
+  messages?: Array<{
+    // Future: line_ranges for specific prompts
+    line_ranges?: Array<{ start: number, end: number, file: string }>;
+  }>;
+  // Future: map specific lines to prompts
+  file_line_map?: { [filepath: string]: number[] };
+}
+```
+
+## Configuration Options
+
+### Input Parameters
+
+| Parameter | Description | Default | Required |
+|-----------|-------------|---------|----------|
+| `github-token` | GitHub token for API access | - | Yes |
+| `notes-ref` | Git notes ref to read from | `refs/notes/commits` | No |
+| `update-existing` | Update existing comment vs create new | `true` | No |
+| `add-inline-comments` | Add inline comments to files | `false` | No |
+
+### Recommended Settings
+
+**For maximum transparency:**
+```yaml
+add-inline-comments: true
+update-existing: true
+```
+
+**For minimal noise:**
+```yaml
+add-inline-comments: false
+update-existing: true
+```
+
+## Limitations & Future Enhancements
+
+### Current Limitations
+
+1. **File-Level Granularity**: Comments are added at the file level, not specific line ranges (yet)
+2. **First Line Only**: Comments appear on the first changed line of each file
+3. **Aggregate Stats**: Shows overall AI contribution per file, not per-line breakdown
+
+### Future Enhancements
+
+When Git AI adds more detailed line-level data, this feature will automatically support:
+
+- 📍 **Line-specific comments**: "Lines 42-67 were AI-generated by this prompt"
+- 🔀 **Multi-prompt files**: "Lines 1-20 from Prompt A, Lines 21-45 from Prompt B"
+- 📝 **Edit tracking**: "Line 15 was suggested by AI but modified by human"
+- 🎯 **Interactive diff**: Click any AI line to see the exact prompt that created it
+
+## Example Output
+
+### Inline Comment (in Files Changed)
+
+<img width="600" alt="Inline comment example" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200'%3E%3Crect fill='%23f6f8fa' width='600' height='200'/%3E%3Ctext x='10' y='30' font-family='monospace' font-size='14' fill='%23000'%3E🤖 AI-Modified File - 85%25 AI contribution%3C/text%3E%3C/svg%3E">
+
+### Main PR Comment (linked from inline)
+
+The inline comment links to detailed breakdown with:
+- Full conversation history (collapsible)
+- All user and assistant messages
+- Tool usage statistics
+- Visual charts and graphs
+- Commit duration and timing
+
+## Troubleshooting
+
+### Comments Not Appearing
+
+1. **Check workflow logs** for errors
+2. **Verify permissions**: Ensure `pull-requests: write` is set
+3. **Confirm git notes exist**: Run `git notes --ref=refs/notes/commits list`
+4. **Check file paths**: Ensure note file paths match PR changed files
+
+### Duplicate Comments
+
+The bot automatically prevents duplicates by checking for existing reviews. If you see duplicates, they're likely from different workflow runs or manual reviews.
+
+### Links Not Working
+
+If commit links don't jump to the right section:
+1. Ensure the main comment was posted first
+2. Check that commit SHA matches between inline and main comments
+3. Refresh the page to ensure anchors are loaded
+
+## Tips & Best Practices
+
+### For Teams
+
+- **Enable for all repos** to maintain consistency
+- **Educate reviewers** on what the markers mean
+- **Use with PR templates** to encourage AI transparency
+
+### For Solo Developers
+
+- Great for **tracking your own AI usage** over time
+- Helps **document AI decisions** for future reference
+- Useful for **learning from AI suggestions**
+
+### For Open Source
+
+- Increases **transparency** about AI contributions
+- Helps **maintainers** understand AI-assisted PRs
+- Builds **trust** in the review process
+
+## API & Extensions
+
+The inline comment feature uses GitHub's Pull Request Review API:
+
+```typescript
+// Creates a review with inline comments
+await octokit.rest.pulls.createReview({
+  owner,
+  repo,
+  pull_number: prNumber,
+  event: 'COMMENT',
+  body: 'Review description',
+  comments: [
+    {
+      path: 'src/file.ts',
+      line: 1,
+      body: 'Inline comment text'
+    }
+  ]
+});
+```
+
+You can extend this further by:
+- Adding custom comment templates
+- Filtering by AI percentage threshold
+- Integrating with other review tools
+- Creating custom visualizations
+
+## Questions?
+
+- Check the [main README](README.md) for general usage
+- See [AI-NOTES-GUIDE.md](AI-NOTES-GUIDE.md) for git notes setup
+- Open an issue for bugs or feature requests
+
+---
+
+*Happy coding with AI assistance! 🚀*
+

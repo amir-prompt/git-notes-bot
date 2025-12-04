@@ -1,2 +1,80 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 21:49:09 UTC
+AI-NOTES-GUIDE.md
+  ae16f7e9b721cde0 5-17,299-333
+setup-auto-push-notes.sh
+  ae16f7e9b721cde0 45-46,51
+add-ai-note.sh
+  ae16f7e9b721cde0 25-26,47,52,59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "ddb3d1de184cfdc27b75c827538536b844d2f8d1",
+  "prompts": {
+    "ae16f7e9b721cde0": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d58be2c5-17a3-4c58-a7a4-f2dfd501b6ed",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "please improve the docs",
+          "timestamp": "2025-12-04T21:40:22.595Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll help you improve the documentation. Let me first read the existing documentation files to understand what needs improvement.",
+          "timestamp": "2025-12-04T21:40:29.424Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/amir.txt"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/README.md"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/AI-NOTES-GUIDE.md"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/action.yml"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/index.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/package.json"
+          }
+        }
+      ],
+      "total_additions": 48,
+      "total_deletions": 11,
+      "accepted_lines": 84,
+      "overriden_lines": 0
+    }
+  }
+}

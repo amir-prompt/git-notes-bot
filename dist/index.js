@@ -46,6 +46,41 @@ function createProgressBar(value, total, width = 20) {
     return `[${'█'.repeat(filled)}${'░'.repeat(empty)}] ${percentage.toFixed(0)}%`;
 }
 /**
+ * Creates a circular pie chart representation using Unicode
+ */
+function createPieChart(percentage) {
+    // Use circle emojis to represent pie chart
+    if (percentage >= 87.5)
+        return '🟢'; // 7/8 - 8/8
+    if (percentage >= 75)
+        return '🔵'; // 6/8 - 7/8
+    if (percentage >= 62.5)
+        return '🟡'; // 5/8 - 6/8
+    if (percentage >= 50)
+        return '🟠'; // 4/8 - 5/8
+    if (percentage >= 37.5)
+        return '🟠'; // 3/8 - 4/8
+    if (percentage >= 25)
+        return '🔴'; // 2/8 - 3/8
+    if (percentage >= 12.5)
+        return '🔴'; // 1/8 - 2/8
+    return '⚪'; // 0 - 1/8
+}
+/**
+ * Creates a visual donut chart for AI vs Human contributions
+ */
+function createDonutChart(aiPercent) {
+    const blocks = ['⬜', '🟦', '🟦', '🟦', '🟦'];
+    const steps = Math.round(aiPercent / 25);
+    return '```\n' +
+        '     AI vs Human\n' +
+        '    ┌─────────┐\n' +
+        `    │ ${aiPercent}% AI  │\n` +
+        '    └─────────┘\n' +
+        `    ${'🤖'.repeat(Math.min(steps, 5))}${'👤'.repeat(Math.max(0, 5 - steps))}\n` +
+        '```';
+}
+/**
  * Formats a timestamp into a human-readable format
  */
 function formatTimestamp(timestamp) {
@@ -167,21 +202,45 @@ function formatAIAuthorship(note) {
             const humanWidth = totalLines > 0 ? Math.round((humanLines / totalLines) * barWidth) : 0;
             const aiWidth = barWidth - humanWidth;
             output += `#### 👥 Authorship\n\n`;
+            output += `<table><tr><td>\n\n`;
             output += `\`\`\`\n`;
-            output += `you  ${'█'.repeat(humanWidth)}${'░'.repeat(aiWidth)} ai\n`;
-            output += `     ${humanPercent}%${' '.repeat(barWidth - humanPercent.toString().length - aiPercent.toString().length - 1)}${aiPercent}%\n`;
+            output += `┌────────────────────────────────────────┐\n`;
+            output += `│  you  ${'█'.repeat(humanWidth)}${'░'.repeat(aiWidth)} ai  │\n`;
+            output += `│       ${humanPercent}%${' '.repeat(barWidth - humanPercent.toString().length - aiPercent.toString().length - 1)}${aiPercent}%       │\n`;
+            output += `├────────────────────────────────────────┤\n`;
             const acceptanceRate = totalLines > 0 ? Math.round((aiLines / totalLines) * 100) : 0;
-            output += `     ${acceptanceRate}% AI code accepted\n`;
+            output += `│   ${createPieChart(acceptanceRate)} ${acceptanceRate}% AI code accepted        │\n`;
+            output += `└────────────────────────────────────────┘\n`;
             output += `\`\`\`\n\n`;
-            // Code Statistics
+            output += `</td><td>\n\n`;
+            // Add visual representation
+            const aiIconCount = Math.round(aiPercent / 10);
+            const humanIconCount = Math.round(humanPercent / 10);
+            output += `**Visual Breakdown**\n\n`;
+            output += `🤖 AI: ${'▓'.repeat(aiIconCount)}${'░'.repeat(10 - aiIconCount)}\n\n`;
+            output += `👤 You: ${'▓'.repeat(humanIconCount)}${'░'.repeat(10 - humanIconCount)}\n\n`;
+            output += `</td></tr></table>\n\n`;
+            // Code Statistics with enhanced visuals
             const totalChanges = (prompt.total_additions || 0) + (prompt.total_deletions || 0);
             output += `#### 📊 Code Changes\n\n`;
-            output += `| Metric | Count | Visualization |\n`;
-            output += `|--------|-------|---------------|\n`;
-            output += `| ➕ Additions | ${prompt.total_additions || 0} | ${createProgressBar(prompt.total_additions || 0, totalChanges)} |\n`;
-            output += `| ➖ Deletions | ${prompt.total_deletions || 0} | ${createProgressBar(prompt.total_deletions || 0, totalChanges)} |\n`;
-            output += `| ✅ Accepted | ${prompt.accepted_lines || 0} | ${createProgressBar(prompt.accepted_lines || 0, prompt.total_additions || 1)} |\n`;
-            output += `| 🔄 Overridden | ${prompt.overriden_lines || 0} | ${createProgressBar(prompt.overriden_lines || 0, prompt.total_additions || 1)} |\n\n`;
+            output += `<table>\n`;
+            output += `<tr><th>Metric</th><th>Count</th><th>Visualization</th><th>Impact</th></tr>\n`;
+            const addPercent = totalChanges > 0 ? ((prompt.total_additions || 0) / totalChanges * 100).toFixed(0) : 0;
+            const delPercent = totalChanges > 0 ? ((prompt.total_deletions || 0) / totalChanges * 100).toFixed(0) : 0;
+            const accPercent = (prompt.total_additions || 0) > 0 ? ((prompt.accepted_lines || 0) / (prompt.total_additions || 1) * 100).toFixed(0) : 0;
+            const ovPercent = (prompt.total_additions || 0) > 0 ? ((prompt.overriden_lines || 0) / (prompt.total_additions || 1) * 100).toFixed(0) : 0;
+            output += `<tr><td>➕ Additions</td><td><b>${prompt.total_additions || 0}</b></td><td>${createProgressBar(prompt.total_additions || 0, totalChanges)}</td><td>🟢 ${addPercent}%</td></tr>\n`;
+            output += `<tr><td>➖ Deletions</td><td><b>${prompt.total_deletions || 0}</b></td><td>${createProgressBar(prompt.total_deletions || 0, totalChanges)}</td><td>🔴 ${delPercent}%</td></tr>\n`;
+            output += `<tr><td>✅ Accepted</td><td><b>${prompt.accepted_lines || 0}</b></td><td>${createProgressBar(prompt.accepted_lines || 0, prompt.total_additions || 1)}</td><td>💚 ${accPercent}%</td></tr>\n`;
+            output += `<tr><td>🔄 Overridden</td><td><b>${prompt.overriden_lines || 0}</b></td><td>${createProgressBar(prompt.overriden_lines || 0, prompt.total_additions || 1)}</td><td>🟡 ${ovPercent}%</td></tr>\n`;
+            output += `</table>\n\n`;
+            // Add a sparkline summary
+            output += `**Change Pattern:** `;
+            const pattern = totalChanges > 0 ?
+                `${'▁'.repeat(Math.min(3, Math.round((prompt.total_deletions || 0) / totalChanges * 10)))}` +
+                    `${'▃'.repeat(Math.min(3, Math.round((prompt.accepted_lines || 0) / totalChanges * 10)))}` +
+                    `${'▅'.repeat(Math.min(3, Math.round((prompt.overriden_lines || 0) / totalChanges * 10)))}` : '▁';
+            output += `\`${pattern}\` (deletions → accepted → modified)\n\n`;
             // Conversation Summary
             if (prompt.messages && prompt.messages.length > 0) {
                 output += `#### 💬 Conversation\n\n`;
@@ -224,14 +283,99 @@ function formatAIAuthorship(note) {
     }
 }
 /**
+ * Calculates aggregate statistics from all notes
+ */
+function calculateAggregateStats(notes) {
+    let totalAdditions = 0;
+    let totalDeletions = 0;
+    let totalAccepted = 0;
+    let totalOverridden = 0;
+    let aiPercentSum = 0;
+    let validCommits = 0;
+    const totalFiles = new Set();
+    for (const { note } of notes) {
+        try {
+            const lines = note.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line === '---' || line.startsWith('{'))
+                    break;
+                if (line && !line.match(/^[a-f0-9\s\-]+$/)) {
+                    totalFiles.add(line.split(/\s+/)[0]);
+                }
+            }
+            const jsonMatch = note.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const data = JSON.parse(jsonMatch[0]);
+                if (data.prompts) {
+                    for (const prompt of Object.values(data.prompts)) {
+                        totalAdditions += prompt.total_additions || 0;
+                        totalDeletions += prompt.total_deletions || 0;
+                        totalAccepted += prompt.accepted_lines || 0;
+                        totalOverridden += prompt.overriden_lines || 0;
+                        const lines = prompt.total_additions || 0;
+                        if (lines > 0) {
+                            aiPercentSum += ((prompt.accepted_lines || 0) / lines) * 100;
+                            validCommits++;
+                        }
+                    }
+                }
+            }
+        }
+        catch { }
+    }
+    return {
+        totalAdditions,
+        totalDeletions,
+        totalAccepted,
+        totalOverridden,
+        avgAIPercent: validCommits > 0 ? aiPercentSum / validCommits : 0,
+        totalFiles,
+        commitCount: notes.length
+    };
+}
+/**
  * Formats git notes into a markdown comment for the PR
  */
 function formatNotesAsComment(notes, notesRef) {
     if (notes.length === 0) {
         return '';
     }
+    const stats = calculateAggregateStats(notes);
     let comment = `## 🤖 AI Authorship Report\n\n`;
-    comment += `*AI contributions from \`${notesRef}\`*\n\n`;
+    // Add visual summary card
+    comment += `<div align="center">\n\n`;
+    comment += `### 📊 Summary Dashboard\n\n`;
+    comment += `\`\`\`\n`;
+    comment += `╔═══════════════════════════════════════════════════════════╗\n`;
+    comment += `║                    PR STATISTICS                          ║\n`;
+    comment += `╠═══════════════════════════════════════════════════════════╣\n`;
+    comment += `║  📝 Commits: ${stats.commitCount.toString().padEnd(10)} 📁 Files: ${stats.totalFiles.size.toString().padEnd(16)} ║\n`;
+    comment += `║  ➕ Added: ${stats.totalAdditions.toString().padEnd(12)} ➖ Removed: ${stats.totalDeletions.toString().padEnd(13)} ║\n`;
+    comment += `║  ✅ Accepted: ${stats.totalAccepted.toString().padEnd(9)} 🔄 Modified: ${stats.totalOverridden.toString().padEnd(11)} ║\n`;
+    comment += `╠═══════════════════════════════════════════════════════════╣\n`;
+    comment += `║            🤖 AI Contribution: ${Math.round(stats.avgAIPercent)}%${' '.repeat(19 - Math.round(stats.avgAIPercent).toString().length)}║\n`;
+    comment += `║            ${createProgressBar(stats.totalAccepted, stats.totalAdditions, 30).padEnd(39)}║\n`;
+    comment += `╚═══════════════════════════════════════════════════════════╝\n`;
+    comment += `\`\`\`\n\n`;
+    comment += `</div>\n\n`;
+    comment += `*Details from \`${notesRef}\`*\n\n`;
+    // Add timeline if multiple commits
+    if (notes.length > 1) {
+        comment += `### 📅 Commit Timeline\n\n`;
+        comment += `\`\`\`\n`;
+        for (let i = 0; i < notes.length; i++) {
+            const { commitSha } = notes[i];
+            const shortSha = commitSha.substring(0, 7);
+            const isLast = i === notes.length - 1;
+            comment += `${isLast ? '└─' : '├─'} 📝 ${shortSha}\n`;
+            if (!isLast)
+                comment += `│\n`;
+        }
+        comment += `\`\`\`\n\n`;
+    }
+    // Individual commit details
+    comment += `## 📋 Detailed Breakdown\n\n`;
     for (const { commitSha, note } of notes) {
         const shortSha = commitSha.substring(0, 7);
         comment += `### 📝 Commit \`${shortSha}\`\n\n`;

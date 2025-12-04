@@ -1,6 +1,6 @@
 name: 'Git Notes to PR Comment'
-description: 'Posts git notes from PR commits as a comment on the pull request'
-author: 'Your Name'
+description: 'Posts git notes from PR commits as beautifully formatted comments with AI authorship visualizations'
+author: 'amir-prompt'
 
 branding:
   icon: 'message-square'

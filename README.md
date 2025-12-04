@@ -1,14 +1,48 @@
 # Git Notes Bot
 
-A GitHub Action that reads [git notes](https://git-scm.com/docs/git-notes) from commits in a pull request and posts them as a PR comment.
+A GitHub Action that reads [git notes](https://git-scm.com/docs/git-notes) from commits in a pull request and posts them as beautifully formatted PR comments with rich visualizations.
+
+## Table of Contents
+
+- [What are Git Notes?](#what-are-git-notes)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Git AI / Cursor Integration](#git-ai--cursor-integration)
+- [Pushing Git Notes to Remote](#pushing-git-notes-to-remote)
+- [Example Output](#example-output)
+- [Troubleshooting](#troubleshooting)
+- [How It Works](#how-it-works)
+- [Advanced Configuration](#advanced-configuration)
+- [Development](#development)
+- [Contributing](#contributing)
 
 ## What are Git Notes?
 
 Git notes are metadata attached to commits without modifying the commit itself. They're useful for:
+- **AI authorship tracking** - Perfect for [Git AI](https://usegitai.com/) / [Cursor](https://cursor.sh/) workflows
 - Adding review information after the fact
-- Storing AI authorship data (like [Git AI](https://usegitai.com/))
 - Attaching test results or code coverage data
 - Any supplementary information about commits
+
+## Features
+
+- 📊 **Visual Dashboard** - Beautiful summary card with aggregate PR statistics
+- 🎨 **Rich Visualizations** - Progress bars, pie charts, and sparklines for quick insights
+- 📅 **Timeline View** - Visual commit timeline for multi-commit PRs
+- 👥 **Authorship Graphics** - Side-by-side AI vs human contribution breakdown with icons
+- 📈 **Enhanced Tables** - Color-coded impact metrics and change patterns
+- 🔄 **Smart Updates** - Updates existing comments instead of creating duplicates
+- 🤖 **Git AI Compatible** - Automatically parses and displays Git AI authorship data
+- ⏱️ **Duration Tracking** - Shows time from first change to commit
+- 💬 **Conversation History** - Displays full AI conversation with collapsible details
+
+## Quick Start
+
+1. **Add the GitHub Action** to `.github/workflows/git-notes-comment.yml`
+2. **Use Git AI / Cursor** for automatic note creation, or add notes manually
+3. **Push notes to remote** (run `./setup-auto-push-notes.sh` for automatic syncing)
+4. **Open a PR** - The bot automatically posts beautiful AI authorship reports!
 
 ## Usage
 
@@ -61,6 +95,19 @@ jobs:
 | `notes-found` | Whether any git notes were found (`true`/`false`) |
 | `notes-count` | Number of commits with git notes |
 
+## Git AI / Cursor Integration
+
+This action works seamlessly with [Git AI](https://usegitai.com/) and [Cursor](https://cursor.sh/) (including Cursor Composer). When you use these tools:
+
+1. **Automatic Note Creation** - Git AI automatically creates git notes with detailed authorship data for every commit
+2. **Rich Metadata** - Captures AI model, conversation history, code changes, timestamps, and file modifications
+3. **Visual Reports** - This action parses the notes and displays beautiful visualizations on your PRs
+4. **Zero Configuration** - Works out of the box with Cursor's default settings
+
+Simply commit with Cursor/Git AI, push your notes, and open a PR - the bot handles the rest!
+
+> **Tip**: The visual authorship bars and statistics you see in your Cursor terminal are automatically captured and displayed on GitHub PRs.
+
 ## Pushing Git Notes to Remote
 
 ⚠️ **Important**: By default, `git push` does not push notes. This causes a common issue where:
@@ -87,24 +134,153 @@ git push origin refs/notes/commits
 
 # Or configure git to always push notes
 git config --add remote.origin.push refs/notes/commits
+
+# For custom note refs (e.g., refs/notes/ai)
+git push origin refs/notes/ai
 ```
 
 ## Example Output
 
-When the action finds git notes, it posts a comment like:
+When the action finds AI authorship notes, it posts a beautifully formatted comment with rich visualizations:
 
-> ## 📝 Git Notes
->
-> *Notes from `refs/notes/commits`*
->
-> ### Commit `abc1234`
->
-> ```
-> Your note content here
-> ```
->
-> ---
-> *Posted by git-notes-bot*
+### 🤖 AI Authorship Report
+
+```
+╔═══════════════════════════════════════════════════════════╗
+║                    PR STATISTICS                          ║
+╠═══════════════════════════════════════════════════════════╣
+║  📝 Commits: 3          📁 Files: 12                      ║
+║  ➕ Added: 245          ➖ Removed: 89                     ║
+║  ✅ Accepted: 196       🔄 Modified: 49                    ║
+╠═══════════════════════════════════════════════════════════╣
+║            🤖 AI Contribution: 80%                        ║
+║            [████████████████░░░░░░░░░░░░░░] 80%          ║
+╚═══════════════════════════════════════════════════════════╝
+```
+
+### 📅 Commit Timeline
+```
+├─ 📝 abc1234
+│
+├─ 📝 def5678
+│
+└─ 📝 ghi9012
+```
+
+### 📝 Commit `abc1234`
+
+**📁 Files Modified**
+- `src/index.ts`
+- `src/utils.ts`
+
+**⏱️ Commit Duration**
+**2m 45s** (from first change to commit)
+
+**🤖 AI Assistant**
+- **Tool:** cursor
+- **Model:** claude-sonnet-4
+- **Human Author:** yourname
+
+**👥 Authorship**
+
+| You vs AI | Visual Breakdown |
+|-----------|------------------|
+| `┌────────────────────────────────────────┐` | **Visual Breakdown** |
+| `│  you  ████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ ai  │` | 🤖 AI: ▓▓▓▓▓▓▓▓░░ |
+| `│       20%                          80%       │` | 👤 You: ▓▓░░░░░░░░ |
+| `├────────────────────────────────────────┤` | |
+| `│   🔵 80% AI code accepted                   │` | |
+| `└────────────────────────────────────────┘` | |
+
+**📊 Code Changes**
+
+| Metric | Count | Visualization | Impact |
+|--------|-------|---------------|--------|
+| ➕ Additions | **45** | [████████████████░░░░] 75% | 🟢 75% |
+| ➖ Deletions | **15** | [██████░░░░░░░░░░░░░░] 25% | 🔴 25% |
+| ✅ Accepted | **36** | [████████████████░░░░] 80% | 💚 80% |
+| 🔄 Overridden | **9** | [████░░░░░░░░░░░░░░░░] 20% | 🟡 20% |
+
+**Change Pattern:** `▁▃▅` (deletions → accepted → modified)
+
+**💬 Conversation**
+- 👤 User messages: 3
+- 🤖 Assistant messages: 5
+- 🔧 Tool uses: 12
+
+<details>
+<summary>View full conversation</summary>
+  
+(Full conversation history with timestamps)
+</details>
+
+---
+*Posted by git-notes-bot*
+
+## Troubleshooting
+
+### No comment appears on PR
+
+1. **Check that notes were pushed:**
+   ```bash
+   git log --show-notes=refs/notes/commits
+   ```
+   
+2. **Verify the action ran:** Check the "Actions" or "Checks" tab on your PR
+
+3. **Check permissions:** Ensure the workflow has `pull-requests: write` permission
+
+4. **Verify note ref:** Make sure `notes-ref` in your workflow matches where your notes are stored
+
+### Different percentages locally vs GitHub
+
+This happens when notes aren't pushed. Solutions:
+- **Automatic (Recommended)**: Run `./setup-auto-push-notes.sh` to set up auto-push
+- **Manual**: Always run `git push origin refs/notes/commits` after pushing commits
+
+### Notes not updating
+
+If the workflow uses `update-existing: true` (default), it updates the same comment. To force a new comment, temporarily set it to `false` or delete the existing comment.
+
+## How It Works
+
+1. **Fetch Notes**: The action fetches git notes from the configured ref (e.g., `refs/notes/commits`)
+2. **Parse Data**: Reads notes for commits in the PR range (base...head)
+3. **Smart Formatting**: 
+   - Detects Git AI JSON format and creates rich visualizations
+   - Falls back to plain text formatting for simple notes
+4. **Comment Management**: Creates or updates a single PR comment with all findings
+
+## Advanced Configuration
+
+### Custom Note Format
+
+While optimized for Git AI, the action supports any git note format:
+- **Git AI format**: Full rich visualization with statistics
+- **Plain text**: Displays in code blocks
+- **Custom JSON**: Parsed as plain text (unless it matches Git AI schema)
+
+### Workflow Examples
+
+**Multiple note refs in one comment:**
+```yaml
+- name: Fetch all note refs
+  run: |
+    git fetch origin 'refs/notes/*:refs/notes/*' || true
+
+- name: Post AI Notes
+  uses: amir-prompt/git-notes-bot@main
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    notes-ref: refs/notes/commits
+
+- name: Post Review Notes  
+  uses: amir-prompt/git-notes-bot@main
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    notes-ref: refs/notes/review
+    update-existing: false  # Creates separate comments
+```
 
 ## Development
 
@@ -112,9 +288,28 @@ When the action finds git notes, it posts a comment like:
 # Install dependencies
 npm install
 
-# Build
+# Build TypeScript
 npm run build
+
+# The compiled output goes to dist/
 ```
+
+### Project Structure
+```
+src/
+  ├── index.ts        # Main action logic, formatting, PR comments
+  ├── git-notes.ts    # Git notes fetching and parsing
+dist/                 # Compiled JavaScript (committed for GitHub Actions)
+```
+
+## Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test with a sample repository
+5. Submit a pull request
 
 ## License
 

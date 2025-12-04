@@ -48,13 +48,45 @@ function createProgressBar(value: number, total: number, width: number = 20): st
  */
 function formatAIAuthorship(note: string): string {
   try {
-    const data: AIAuthorshipNote = JSON.parse(note);
+    // Extract file paths from the beginning of the note
+    const lines = note.split('\n');
+    const filePaths: string[] = [];
+    let jsonStartIndex = 0;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line === '---' || line.startsWith('{')) {
+        jsonStartIndex = i;
+        break;
+      }
+      if (line && !line.match(/^[a-f0-9\s\-]+$/)) {
+        // This looks like a file path (not just hex/numbers/dashes)
+        filePaths.push(line.split(/\s+/)[0]);
+      }
+    }
+    
+    // Extract JSON from note
+    const jsonMatch = note.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      return `\`\`\`\n${note}\n\`\`\`\n\n`;
+    }
+    
+    const data: AIAuthorshipNote = JSON.parse(jsonMatch[0]);
     
     if (!data.prompts) {
       return `\`\`\`\n${note}\n\`\`\`\n\n`;
     }
 
     let output = '';
+    
+    // Show affected files
+    if (filePaths.length > 0) {
+      output += `#### 📁 Files Modified\n\n`;
+      for (const filepath of filePaths) {
+        output += `- \`${filepath}\`\n`;
+      }
+      output += `\n`;
+    }
     
     for (const [promptId, prompt] of Object.entries(data.prompts)) {
       // AI Agent Info

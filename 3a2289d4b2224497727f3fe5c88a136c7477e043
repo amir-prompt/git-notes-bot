@@ -1,2 +1,78 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 21:37:27 UTC
+src/index.ts
+  19c18ffd94ba5046 66-97,144-159
+  d0ca3b06e428793e 47-65,219,221,223,225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "3a2289d4b2224497727f3fe5c88a136c7477e043",
+  "prompts": {
+    "19c18ffd94ba5046": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "5e165704-cb5b-4147-acef-c4a2b4642660",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "I want to be able to sho the time that each commit took? from the first code change to the commit",
+          "timestamp": "2025-12-04T21:34:48.404Z"
+        }
+      ],
+      "total_additions": 49,
+      "total_deletions": 0,
+      "accepted_lines": 49,
+      "overriden_lines": 0
+    },
+    "d0ca3b06e428793e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "ed895bfe-c568-465b-be03-d4a932dc5397",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "Can i get the time that every messges in the conversion sent?",
+          "timestamp": "2025-12-04T21:31:40.836Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll help you check the current format of the messages in your conversation. Let me first look at the file you have open.",
+          "timestamp": "2025-12-04T21:31:45.978Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/amir.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Let me check the main source files to understand how your git-notes-bot project stores conversation data:",
+          "timestamp": "2025-12-04T21:31:51.494Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/index.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {}
+        }
+      ],
+      "total_additions": 24,
+      "total_deletions": 4,
+      "accepted_lines": 23,
+      "overriden_lines": 0
+    }
+  }
+}

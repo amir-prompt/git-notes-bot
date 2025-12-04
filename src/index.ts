@@ -44,6 +44,58 @@ function createProgressBar(value: number, total: number, width: number = 20): st
 }
 
 /**
+ * Formats a timestamp into a human-readable format
+ */
+function formatTimestamp(timestamp: string): string {
+  try {
+    const date = new Date(timestamp);
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    };
+    return date.toLocaleString('en-US', options);
+  } catch {
+    return timestamp;
+  }
+}
+
+/**
+ * Calculates duration between two timestamps and formats it
+ */
+function formatDuration(startTime: string, endTime: string): string {
+  try {
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+    const diffMs = end - start;
+    
+    if (diffMs < 0) return 'N/A';
+    
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (days > 0) {
+      const remainingHours = hours % 24;
+      return remainingHours > 0 ? `${days}d ${remainingHours}h` : `${days}d`;
+    } else if (hours > 0) {
+      const remainingMinutes = minutes % 60;
+      return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    } else if (minutes > 0) {
+      const remainingSeconds = seconds % 60;
+      return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+    } else {
+      return `${seconds}s`;
+    }
+  } catch {
+    return 'N/A';
+  }
+}
+
+/**
  * Formats AI authorship data in a graphical way
  */
 function formatAIAuthorship(note: string): string {
@@ -89,6 +141,22 @@ function formatAIAuthorship(note: string): string {
     }
     
     for (const [promptId, prompt] of Object.entries(data.prompts)) {
+      // Calculate commit duration if messages exist
+      if (prompt.messages && prompt.messages.length > 0) {
+        const timestamps = prompt.messages
+          .map(m => m.timestamp)
+          .filter(t => t !== undefined) as string[];
+        
+        if (timestamps.length >= 2) {
+          const firstTimestamp = timestamps[0];
+          const lastTimestamp = timestamps[timestamps.length - 1];
+          const duration = formatDuration(firstTimestamp, lastTimestamp);
+          
+          output += `#### ⏱️ Commit Duration\n\n`;
+          output += `**${duration}** (from first change to commit)\n\n`;
+        }
+      }
+      
       // AI Agent Info
       output += `#### 🤖 AI Assistant\n\n`;
       if (prompt.agent_id) {
@@ -148,12 +216,13 @@ function formatAIAuthorship(note: string): string {
         output += `<details>\n<summary>View full conversation</summary>\n\n`;
         
         for (const msg of prompt.messages) {
+          const timestamp = msg.timestamp ? ` *(${formatTimestamp(msg.timestamp)})*` : '';
           if (msg.type === 'user') {
-            output += `**👤 User:** ${msg.text}\n\n`;
+            output += `**👤 User:**${timestamp} ${msg.text}\n\n`;
           } else if (msg.type === 'assistant' && msg.text) {
-            output += `**🤖 Assistant:** ${msg.text}\n\n`;
+            output += `**🤖 Assistant:**${timestamp} ${msg.text}\n\n`;
           } else if (msg.type === 'tool_use' && msg.name) {
-            output += `*🔧 Used tool: ${msg.name}*\n\n`;
+            output += `*🔧 Used tool: ${msg.name}*${timestamp}\n\n`;
           }
         }
         

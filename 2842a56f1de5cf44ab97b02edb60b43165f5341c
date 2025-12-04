@@ -1,2 +1,46 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 18:06:51 UTC
+amir.txt
+  435f67c15803c545 1-8,10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "2842a56f1de5cf44ab97b02edb60b43165f5341c",
+  "prompts": {
+    "435f67c15803c545": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "f9dc1657-d8be-46ec-991e-50f33af4cc48",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "add new text file name it amir.txt",
+          "timestamp": "2025-12-04T18:05:58.462Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll create a new text file named `amir.txt` for you.",
+          "timestamp": "2025-12-04T18:06:05.279Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "write",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/amir.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Done! I've created an empty text file named `amir.txt` in your project directory at `/Users/amir.barshavit/dev/prompt/git-notes-bot/amir.txt`.",
+          "timestamp": "2025-12-04T18:06:11.173Z"
+        }
+      ],
+      "total_additions": 11,
+      "total_deletions": 0,
+      "accepted_lines": 10,
+      "overriden_lines": 0
+    }
+  }
+}

@@ -41,7 +41,7 @@ jobs:
           git fetch origin 'refs/notes/*:refs/notes/*' || true
 
       - name: Post Git Notes
-        uses: your-username/git-notes-bot@v1
+        uses: amir-prompt/git-notes-bot@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```

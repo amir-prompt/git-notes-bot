@@ -36,6 +36,7 @@ Git notes are metadata attached to commits without modifying the commit itself. 
 - 🤖 **Git AI Compatible** - Automatically parses and displays Git AI authorship data
 - ⏱️ **Duration Tracking** - Shows time from first change to commit
 - 💬 **Conversation History** - Displays full AI conversation with collapsible details
+- 🔗 **Inline PR Comments** - Mark AI-modified files directly in the diff view with links to prompts
 
 ## Quick Start
 
@@ -87,6 +88,7 @@ jobs:
 | `github-token` | GitHub token for API access | Yes | - |
 | `notes-ref` | Git notes ref to read from | No | `refs/notes/commits` |
 | `update-existing` | Update existing comment instead of creating new | No | `true` |
+| `add-inline-comments` | Add inline comments to AI-modified files in PR diff | No | `false` |
 
 ### Outputs
 
@@ -107,6 +109,30 @@ This action works seamlessly with [Git AI](https://usegitai.com/) and [Cursor](h
 Simply commit with Cursor/Git AI, push your notes, and open a PR - the bot handles the rest!
 
 > **Tip**: The visual authorship bars and statistics you see in your Cursor terminal are automatically captured and displayed on GitHub PRs.
+
+## Inline PR Comments (NEW! 🔗)
+
+Mark AI-modified files **directly in your PR's diff view** with inline comments that show:
+- 🤖 AI contribution percentage for each file
+- 💬 The original prompt that created the changes
+- 📊 Acceptance statistics (accepted vs suggested lines)
+- 🔗 Clickable links to full conversation details
+
+### Enable Inline Comments
+
+Add to your workflow:
+
+```yaml
+- name: Post Git Notes
+  uses: amir-prompt/git-notes-bot@main
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    add-inline-comments: true  # 👈 Enable inline file markers
+```
+
+This creates review comments on AI-modified files in the "Files changed" tab, making it easy for reviewers to see which files had AI assistance and jump directly to the prompts that created them.
+
+> 📖 **[See detailed documentation →](INLINE-COMMENTS.md)**
 
 ## Pushing Git Notes to Remote
 

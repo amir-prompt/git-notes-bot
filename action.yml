@@ -18,6 +18,10 @@ inputs:
     description: 'Update existing comment instead of creating a new one (default: true)'
     required: false
     default: 'true'
+  add-inline-comments:
+    description: 'Add inline review comments to AI-modified files in PR diff (default: false)'
+    required: false
+    default: 'false'
 
 outputs:
   notes-found:

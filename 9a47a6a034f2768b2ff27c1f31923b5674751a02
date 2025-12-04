@@ -1,0 +1,23 @@
+test.txt
+  9c5ded02620b9558 2-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "9a47a6a034f2768b2ff27c1f31923b5674751a02",
+  "prompts": {
+    "9c5ded02620b9558": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "0ee88a2c-ef56-490c-b7e7-5489068d6dd0",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [],
+      "total_additions": 17,
+      "total_deletions": 0,
+      "accepted_lines": 17,
+      "overriden_lines": 0
+    }
+  }
+}

@@ -63,7 +63,23 @@ jobs:
 
 ## Pushing Git Notes to Remote
 
-By default, `git push` does not push notes. You need to push them explicitly:
+⚠️ **Important**: By default, `git push` does not push notes. This causes a common issue where:
+- Your local terminal shows one authorship percentage (e.g., 90% AI)
+- GitHub PR comments show a different percentage (e.g., 100% AI)
+
+### Automated Solution (Recommended)
+
+Run the setup script to automatically push notes with every push:
+
+```bash
+./setup-auto-push-notes.sh
+```
+
+This installs a git hook that keeps GitHub in sync automatically!
+
+### Manual Push
+
+If you prefer to push notes manually:
 
 ```bash
 # Push notes to remote

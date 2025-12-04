@@ -1,2 +1,41 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 22:02:07 UTC
+git-bot-info.txt
+  b0e3659bf211801f 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "7c39c7aa04045a7774d2ab99f22e9827af933207",
+  "prompts": {
+    "b0e3659bf211801f": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "36292a2b-88f5-482b-b972-8185828d52ca",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "create a text file and write something about git bot",
+          "timestamp": "2025-12-04T22:01:27.292Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll create a text file with information about git bots for you.",
+          "timestamp": "2025-12-04T22:01:33.180Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "write",
+          "input": {
+            "file_path": ""
+          }
+        }
+      ],
+      "total_additions": 31,
+      "total_deletions": 0,
+      "accepted_lines": 31,
+      "overriden_lines": 0
+    }
+  }
+}

@@ -65,6 +65,26 @@ function formatAIAuthorship(note: string): string {
       }
       output += `- **Human Author:** ${prompt.human_author || 'Unknown'}\n\n`;
 
+      // AI vs Human Contribution Bar
+      const totalLines = (prompt.total_additions || 0);
+      const aiLines = (prompt.accepted_lines || 0);
+      const humanLines = totalLines - aiLines;
+      const humanPercent = totalLines > 0 ? Math.round((humanLines / totalLines) * 100) : 0;
+      const aiPercent = totalLines > 0 ? Math.round((aiLines / totalLines) * 100) : 0;
+      
+      const barWidth = 40;
+      const humanWidth = totalLines > 0 ? Math.round((humanLines / totalLines) * barWidth) : 0;
+      const aiWidth = barWidth - humanWidth;
+      
+      output += `#### 👥 Authorship\n\n`;
+      output += `\`\`\`\n`;
+      output += `you  ${'█'.repeat(humanWidth)}${'░'.repeat(aiWidth)} ai\n`;
+      output += `     ${humanPercent}%${' '.repeat(barWidth - humanPercent.toString().length - aiPercent.toString().length - 1)}${aiPercent}%\n`;
+      
+      const acceptanceRate = totalLines > 0 ? Math.round((aiLines / totalLines) * 100) : 0;
+      output += `     ${acceptanceRate}% AI code accepted\n`;
+      output += `\`\`\`\n\n`;
+
       // Code Statistics
       const totalChanges = (prompt.total_additions || 0) + (prompt.total_deletions || 0);
       output += `#### 📊 Code Changes\n\n`;

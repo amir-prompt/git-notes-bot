@@ -1,2 +1,96 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 14:53:07 UTC
+add-ai-note.sh
+  8155a6a363a0a455 1-28
+AI-NOTES-GUIDE.md
+  8155a6a363a0a455 1-208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "34b5e52dee6fcd63241f65569e778302d2586755",
+  "prompts": {
+    "8155a6a363a0a455": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "cf73df8c-e381-47a3-91ce-157b692fd9e6",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "add more test to text @test.txt",
+          "timestamp": "2025-12-04T14:47:37.449Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll add more test content to the test.txt file, expanding on the existing test cases and test data.",
+          "timestamp": "2025-12-04T14:47:43.550Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "search_replace",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "I've added more test content to the file:\n\n**New test cases added:**\n- Test case four - null value handling\n- Test case five - boundary conditions\n- Test case six - performance validation\n- Test case seven - integration testing\n\n**New test data entries:**\n- Empty string test\n- Uppercase input test\n- Null value test\n- Alphanumeric input test\n\nAll additions follow the existing format and provide more comprehensive test coverage.",
+          "timestamp": "2025-12-04T14:47:53.902Z"
+        },
+        {
+          "type": "user",
+          "text": "how can i see the @zsh (36-38)  in the github",
+          "timestamp": "2025-12-04T14:49:57.853Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/.cursor/projects/Users-amir-barshavit-dev-prompt-git-notes-bot/terminals/1.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "To view your changes on GitHub, you have a few options:\n\n**1. View the specific commit:**\nGo to: `https://github.com/amir-prompt/git-notes-bot/commit/72b0531`\n\nThis will show you the exact changes from that commit (2 files changed, 22 insertions, 2 deletions).\n\n**2. View the branch:**\nGo to: `https://github.com/amir-prompt/git-notes-bot/tree/test-notes`\n\nThen click on the \"commits\" link to see all commits on the `test-notes` branch.\n\n**3. Compare branches:**\nGo to: `https://github.com/amir-prompt/git-notes-bot/compare/main...test-notes`\n\nThis will show all differences between your `test-notes` branch and the main branch.\n\n**4. Create a Pull Request:**\nIf you want to merge these changes to the main branch:\n- Go to your repository on GitHub\n- Click \"Pull requests\" → \"New pull request\"\n- Select `base: main` and `compare: test-notes`\n- This will show all the changes and allow you to create a PR\n\nSince you just pushed commit `72b0531`, the first option (direct commit link) will show you exactly what changed in that commit.",
+          "timestamp": "2025-12-04T14:50:08.347Z"
+        },
+        {
+          "type": "user",
+          "text": "i want to use git-ai in order to show ai precatcihe on any commit",
+          "timestamp": "2025-12-04T14:50:48.751Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I can help you integrate git-ai statistics into your commits so they're visible on GitHub! Based on your project (git-notes-bot), it looks like you're already set up to use git notes with GitHub Actions.\n\nLet me first check your current setup:",
+          "timestamp": "2025-12-04T14:50:58.403Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/.github/workflows/git-notes-comment.yml"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/git-notes.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/index.ts"
+          }
+        }
+      ],
+      "total_additions": 236,
+      "total_deletions": 0,
+      "accepted_lines": 236,
+      "overriden_lines": 0
+    }
+  }
+}

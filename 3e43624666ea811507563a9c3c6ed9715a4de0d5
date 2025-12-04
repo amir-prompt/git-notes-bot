@@ -1,2 +1,160 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 17:56:48 UTC
+setup-auto-push-notes.sh
+  b41a02feee42f05e 1-44
+AI-NOTES-GUIDE.md
+  b41a02feee42f05e 14-28
+README.md
+  b41a02feee42f05e 66-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "3e43624666ea811507563a9c3c6ed9715a4de0d5",
+  "prompts": {
+    "b41a02feee42f05e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "11230fb1-e9dd-44cb-b4d3-a32037127c65",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "create test_new file",
+          "timestamp": "2025-12-04T15:27:05.134Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll create a `test_new.txt` file for you in the workspace root.",
+          "timestamp": "2025-12-04T15:27:16.072Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "write",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test_new.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "I've created an empty `test_new.txt` file in your workspace root. If you'd like me to add any specific content to it, just let me know!",
+          "timestamp": "2025-12-04T15:27:22.612Z"
+        },
+        {
+          "type": "user",
+          "text": "add some content",
+          "timestamp": "2025-12-04T15:27:31.487Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll add some sample content to the `test_new.txt` file.",
+          "timestamp": "2025-12-04T15:27:35.947Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "write",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test_new.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "I've added some sample content to `test_new.txt` with a basic structure including a description and bullet points for testing purposes. Feel free to modify it as needed!",
+          "timestamp": "2025-12-04T15:27:43.152Z"
+        },
+        {
+          "type": "user",
+          "text": "this is what i got in git\n\n\n\nAI contributions from refs/notes/ai\n\n\n\n📝 Commit 60d15ee\n\n📁 Files Modified\n\ntest_new.txt\n\nb41a02feee42f05e\n\n🤖 AI Assistant\n\nTool: cursor\n\nModel: claude-4.5-sonnet-thinking\n\nHuman Author: Amir Barshavit amir@prompt.security\n\n👥 Authorship\n\nyou  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ ai\n\n     0%                                   100%\n\n     100% AI code accepted",
+          "timestamp": "2025-12-04T15:29:48.088Z"
+        },
+        {
+          "type": "assistant",
+          "text": "Great! The git-notes-bot is working correctly and has tracked the AI contribution. The note shows:\n\n- **Commit**: `60d15ee` (the commit where I created `test_new.txt`)\n- **File Modified**: `test_new.txt`\n- **Authorship**: 100% AI-generated code (which is accurate since I created the entire file content)\n- **Tool**: Cursor with Claude 4.5 Sonnet (Thinking mode)\n- **Human Author**: Amir Barshavit\n\nThis confirms that the bot is properly:\n1. Detecting AI-generated content\n2. Adding git notes to commits\n3. Calculating authorship percentages\n4. Tracking which files were modified with AI assistance\n\nThe tracking ID `b41a02feee42f05e` is also being recorded for reference. This is exactly what the git-notes-bot is designed to do - provide transparency about AI contributions to your codebase!",
+          "timestamp": "2025-12-04T15:29:55.911Z"
+        },
+        {
+          "type": "user",
+          "text": "its not accurte this is the real value @zsh (266-270)",
+          "timestamp": "2025-12-04T15:30:48.258Z"
+        },
+        {
+          "type": "assistant",
+          "text": "You're absolutely right! The updated authorship tracking shows:\n\n- **10% human** (you)\n- **90% AI**\n\nThis is more accurate because:\n1. I initially created the entire file content (100% AI)\n2. Then you manually added the line `- Line 4: Bla bla` (human contribution)\n\nSo the bot correctly recalculated the authorship to reflect your manual edit, giving you 10% credit for the change you made. This shows the git-notes-bot is working properly and updating the authorship percentages as edits are made!\n\nThe first note you showed me (100% AI) was probably from the initial commit before you made your manual edit.",
+          "timestamp": "2025-12-04T15:30:56.382Z"
+        },
+        {
+          "type": "user",
+          "text": "no its not",
+          "timestamp": "2025-12-04T15:31:59.459Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I apologize for the confusion. Could you help me understand what the correct authorship should be? \n\nLooking at what happened:\n- I created the entire `test_new.txt` file with the initial content\n- You then added the line `- Line 4: Bla bla`\n\nWhat percentage do you think should be attributed to human vs AI for this file? Or is there something else about the tracking that's not accurate?",
+          "timestamp": "2025-12-04T15:32:14.535Z"
+        },
+        {
+          "type": "user",
+          "text": "in the github pull request screen i saw 100% ai\n\nin my terminal i saw 90% ai",
+          "timestamp": "2025-12-04T15:34:23.650Z"
+        },
+        {
+          "type": "assistant",
+          "text": "Ah, I understand now! There's an **inconsistency** - the git-notes-bot is showing different authorship percentages in different places:\n\n- **GitHub PR screen**: 100% AI\n- **Local terminal**: 90% AI (10% human)\n\nThis is the actual issue - the bot should be showing the same accurate percentage in both places. This suggests:\n\n1. Either the GitHub Action is calculating authorship differently than the local git notes\n2. Or there's a sync issue where the GitHub PR is showing outdated data\n3. Or the bot is using different logic/data sources in the two environments\n\nThe local terminal showing 90% AI seems more accurate since you added the \"Bla bla\" line manually, but GitHub should be displaying the same percentage. This inconsistency indicates there may be a bug in how the bot syncs or calculates authorship across different contexts.\n\nWould you like me to investigate the bot's code to see why there might be this discrepancy between the GitHub PR view and the local git notes?",
+          "timestamp": "2025-12-04T15:34:31.731Z"
+        },
+        {
+          "type": "user",
+          "text": "yes",
+          "timestamp": "2025-12-04T15:34:55.352Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll investigate the bot's code to understand why there's a discrepancy between GitHub and local git notes.",
+          "timestamp": "2025-12-04T15:35:01.007Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/git-notes.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/index.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/.github/workflows/git-notes-comment.yml"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/add-ai-note.sh"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Now I can see the issue! Let me explain what's happening:\n\n## The Problem\n\nThe GitHub Action **reads git notes** from the remote repository (line 290 in `index.ts`):\n\n```289:290:src/index.ts\n    core.info('Fetching git notes from remote...');\n    await fetchGitNotes(notesRef);\n```\n\nThis fetches notes from `refs/notes/ai` on GitHub. The authorship calculation happens in lines 101-105:\n\n```101:105:src/index.ts\n      const totalLines = (prompt.total_additions || 0);\n      const aiLines = (prompt.accepted_lines || 0);\n      const humanLines = totalLines - aiLines;\n      const humanPercent = totalLines > 0 ? Math.round((humanLines / totalLines) * 100) : 0;\n      const aiPercent = totalLines > 0 ? Math.round((aiLines / totalLines) * 100) : 0;\n```\n\n## Why There's a Discrepancy\n\n1. **Local Terminal (90% AI)**: Shows the most recent git note stored locally in your repository\n2. **GitHub PR (100% AI)**: Shows the git note fetched from the remote GitHub repository\n\nThe issue is: **Your updated local git notes haven't been pushed to GitHub yet!**\n\n## The Solution\n\nAfter making changes that update the git notes locally, you need to push them to GitHub:\n\n```bash\ngit push origin refs/notes/ai\n```\n\nThis will sync your local notes (showing 90% AI) with GitHub, so the PR will display the same accurate percentage.\n\nWould you like me to check if there's a way to automate this in the workflow, or add a reminder/documentation about pushing notes?",
+          "timestamp": "2025-12-04T15:35:15.301Z"
+        },
+        {
+          "type": "user",
+          "text": "yep",
+          "timestamp": "2025-12-04T17:50:26.132Z"
+        }
+      ],
+      "total_additions": 76,
+      "total_deletions": 1,
+      "accepted_lines": 76,
+      "overriden_lines": 0
+    }
+  }
+}

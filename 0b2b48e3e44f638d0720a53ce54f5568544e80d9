@@ -1,2 +1,139 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 21:59:18 UTC
+INLINE-COMMENTS.md
+  d3ac4d12e93b00b6 1-271
+README.md
+  d3ac4d12e93b00b6 39,91,113-136
+src/index.ts
+  d3ac4d12e93b00b6 27,33,38-49,143-211,497-498,575-703,710,730,762-767
+action.yml
+  d3ac4d12e93b00b6 21-24
+IMPLEMENTATION-SUMMARY.md
+  d3ac4d12e93b00b6 1-256
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "0b2b48e3e44f638d0720a53ce54f5568544e80d9",
+  "prompts": {
+    "d3ac4d12e93b00b6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "91c30f93-cff0-43c0-9610-6c913cc42ef6",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "is it possibale to mark the row that change by ai and mark them in th pr view in github?",
+          "timestamp": "2025-12-04T21:50:38.230Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll help you understand the possibilities for marking AI-changed lines in GitHub PR views. Let me first look at your project to understand the context better.",
+          "timestamp": "2025-12-04T21:50:42.811Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/README.md"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/action.yml"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/amir.txt"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/index.ts"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Yes, it's **technically possible** to mark AI-changed rows directly in the GitHub PR diff view! Here's what you can do:\n\n## Options for Marking AI Lines in PR View\n\n### 1. **GitHub Review Comments** (Most Feasible)\nYou can use the GitHub API to add inline comments on specific lines of the diff:\n\n```typescript\n// Example: Add inline review comments\nawait octokit.rest.pulls.createReview({\n  owner,\n  repo,\n  pull_number: prNumber,\n  event: 'COMMENT',\n  comments: [\n    {\n      path: 'src/file.ts',\n      line: 42,  // The line number in the diff\n      body: '🤖 AI-generated line'\n    }\n  ]\n});\n```\n\nThis would place markers directly on specific lines in the PR's \"Files changed\" tab.\n\n### 2. **GitHub Suggestions** (Visual Highlighting)\nYou can use GitHub's suggestion syntax to highlight code:\n\n```markdown\n```suggestion\n// AI generated this line\n```\n```\n\nThis creates a visual diff-like highlight in the PR.\n\n## Current Limitations\n\nThe **main challenge** is that Git AI notes (currently stored in git notes) contain:\n- ✅ File-level information (which files were changed)\n- ✅ Aggregate statistics (total AI lines vs human lines)\n- ❌ **Line-level granularity** (which specific lines were AI vs human)\n\nTo implement this feature, you would need:\n\n1. **Enhanced Git AI metadata** - Git AI/Cursor would need to store which specific line ranges were AI-generated\n2. **Line mapping** - Map the original line numbers to the PR diff line numbers (which can be complex)\n3. **API integration** - Use GitHub's review comments API to annotate the lines\n\n## Possible Implementation Path\n\nIf you want to add this feature, here's a rough approach:\n\n1. **Check if Git AI notes contain line-level data** (they might in newer versions)\n2. **Parse the git diff** to understand the line mappings\n3. **Create review comments** for AI-generated lines\n\nWould you like me to:\n- Investigate whether the current Git AI notes format includes line-level information?\n- Create a prototype that adds inline review comments for AI-changed files (even if just at the file level initially)?\n- Add configuration to enable this as an opt-in feature?",
+          "timestamp": "2025-12-04T21:50:59.711Z"
+        },
+        {
+          "type": "user",
+          "text": "yes please",
+          "timestamp": "2025-12-04T21:52:18.867Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll implement a feature to mark AI-changed lines in the PR diff view! Let me start by investigating the current Git AI notes format and then add inline review comments.",
+          "timestamp": "2025-12-04T21:52:25.886Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/git-notes.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "todo_write",
+          "input": {
+            "merge": false,
+            "todos": [
+              {
+                "content": "Investigate Git AI notes format for line-level data",
+                "id": "1",
+                "status": "in_progress"
+              },
+              {
+                "content": "Add GitHub review comment API integration",
+                "id": "2",
+                "status": "pending"
+              },
+              {
+                "content": "Parse file changes and map to PR diff lines",
+                "id": "3",
+                "status": "pending"
+              },
+              {
+                "content": "Add configuration option for inline comments",
+                "id": "4",
+                "status": "pending"
+              },
+              {
+                "content": "Test and build the changes",
+                "id": "5",
+                "status": "pending"
+              }
+            ]
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Great! I'll implement this feature for you. Let me start by examining a real Git AI note to see what line-level information is available.",
+          "timestamp": "2025-12-04T21:52:27.667Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log --show-notes=refs/notes/commits -1 --pretty=format:\"%H\" 2>/dev/null || echo \"no_commits\"",
+            "is_background": false
+          }
+        }
+      ],
+      "total_additions": 790,
+      "total_deletions": 10,
+      "accepted_lines": 780,
+      "overriden_lines": 0
+    }
+  }
+}

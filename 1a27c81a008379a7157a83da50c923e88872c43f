@@ -1,2 +1,86 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-04 14:58:46 UTC
+src/index.ts
+  88f63ed45eff3364 10-35,37-120,129-130,134-135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "1a27c81a008379a7157a83da50c923e88872c43f",
+  "prompts": {
+    "88f63ed45eff3364": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d3be9da7-ee7b-4b2d-b206-5bc5fbcc6f67",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "this is what i see in the notes \n\ntest.txt\n\n\n\n  681ea6b50943c1a9 39-63\n\n---\n\n{\n\n  \"schema_version\": \"authorship/3.0.0\",\n\n  \"git_ai_version\": \"1.0.22\",\n\n  \"base_commit_sha\": \"8f27e4c17ca9a5fa6984798fc018c297dca8b112\",\n\n  \"prompts\": {\n\n    \"681ea6b50943c1a9\": {\n\n      \"agent_id\": {\n\n        \"tool\": \"cursor\",\n\n        \"id\": \"6c492f41-beef-4ef5-b457-1e0264b7cdd6\",\n\n        \"model\": \"claude-4.5-sonnet-thinking\"\n\n      },\n\n      \"human_author\": \"Amir Barshavit <amir@prompt.security>\",\n\n      \"messages\": [\n\n        {\n\n          \"type\": \"user\",\n\n          \"text\": \"add some contstnt to text.txt\",\n\n          \"timestamp\": \"2025-12-04T14:54:40.082Z\"\n\n        },\n\n        {\n\n          \"type\": \"assistant\",\n\n          \"text\": \"I'll read the current content of `test.txt` and then add some content to it.\",\n\n          \"timestamp\": \"2025-12-04T14:54:45.434Z\"\n\n        },\n\n        {\n\n          \"type\": \"tool_use\",\n\n          \"name\": \"read_file\",\n\n          \"input\": {\n\n            \"target_file\": \"/Users/amir.barshavit/dev/prompt/git-notes-bot/test.txt\"\n\n          }\n\n        },\n\n        {\n\n          \"type\": \"assistant\",\n\n          \"text\": \"I'll add some additional content to `test.txt` to expand on the existing test structure:\",\n\n          \"timestamp\": \"2025-12-04T14:54:51.053Z\"\n\n        },\n\n        {\n\n          \"type\": \"tool_use\",\n\n          \"name\": \"search_replace\",\n\n          \"input\": {\n\n            \"file_path\": \"/Users/amir.barshavit/dev/prompt/git-notes-bot/test.txt\"\n\n          }\n\n        },\n\n        {\n\n          \"type\": \"assistant\",\n\n          \"text\": \"Done! I've added content to `test.txt` including:\\n\\n- **Additional test scenarios** (cases 8-10) covering concurrent operations, timeout handling, and data validation\\n- **Extended test data** with two pending test cases for edge cases like multiple spaces and special characters\\n- **Test environment** section specifying platform and version requirements\\n- **Best practices** section with guidelines for running and maintaining tests\\n\\nThe new content follows the existing structure and adds useful testing documentation.\",\n\n          \"timestamp\": \"2025-12-04T14:55:02.778Z\"\n\n        }\n\n      ],\n\n      \"total_additions\": 25,\n\n      \"total_deletions\": 0,\n\n      \"accepted_lines\": 25,\n\n      \"overriden_lines\": 0\n\n    }\n\n  }\n\n}\n\n\n\n\n\ncan i show in more grapghic way?\n\ni want to see the ai usage",
+          "timestamp": "2025-12-04T14:57:04.674Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I can help you create a more graphical representation of the AI usage in the git notes! Let me first check the current implementation to see how the notes are being displayed.",
+          "timestamp": "2025-12-04T14:57:12.166Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/.github/workflows/git-notes-comment.yml"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/git-notes.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/index.ts"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Now I can see the issue! The current implementation just displays the raw JSON in a code block. Let me create a more graphical and visual representation that parses the AI authorship data and displays it nicely.",
+          "timestamp": "2025-12-04T14:57:21.860Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "search_replace",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/index.ts"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Now let me build the project so the changes take effect:",
+          "timestamp": "2025-12-04T14:57:47.978Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && npm run build",
+            "explanation": "Building the TypeScript project to compile the updated formatting changes",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Perfect! I've updated the git notes formatter to display AI usage in a much more visual and graphical way. Here's what changed:\n\n## 🎨 New Visual Features\n\n**1. AI Assistant Info Section** 🤖\n- Shows the tool used (Cursor)\n- Displays the AI model\n- Shows the human author\n\n**2. Code Statistics with Progress Bars** 📊\n- Visual progress bars using Unicode characters (█ and ░)\n- Shows additions, deletions, accepted lines, and overridden lines\n- Displays percentages for easy understanding\n\n**3. Conversation Summary** 💬\n- Counts of user messages, assistant messages, and tool uses\n- Collapsible details section with full conversation\n- Clear icons to differentiate between user (👤), assistant (🤖), and tools (🔧)\n\n## Example Output\n\nInstead of raw JSON, you'll now see something like:\n\n```\n#### 🤖 AI Assistant\n- Tool: cursor\n- Model: claude-4.5-sonnet-thinking\n- Human Author: Amir Barshavit\n\n#### 📊 Code Changes\n| Metric | Count | Visualization |\n|--------|-------|---------------|\n| ➕ Additions | 25 | [████████████████████] 100% |\n| ➖ Deletions | 0 | [░░░░░░░░░░░░░░░░░░░░] 0% |\n| ✅ Accepted | 25 | [████████████████████] 100% |\n\n#### 💬 Conversation\n- 👤 User messages: 1\n- 🤖 Assistant messages: 3\n- 🔧 Tool uses: 2\n```\n\nThe changes have been built an",
+          "timestamp": "2025-12-04T14:58:00.097Z"
+        }
+      ],
+      "total_additions": 115,
+      "total_deletions": 6,
+      "accepted_lines": 115,
+      "overriden_lines": 0
+    }
+  }
+}

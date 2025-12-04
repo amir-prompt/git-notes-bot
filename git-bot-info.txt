@@ -1,0 +1,31 @@
+Git Bot Overview
+================
+
+A Git bot is an automated tool that interacts with Git repositories to perform various tasks without manual intervention.
+
+Key Features:
+-------------
+1. Automated Commits: Bots can automatically commit changes based on triggers or schedules
+2. Git Notes Management: Can add, update, or retrieve git notes for commits
+3. CI/CD Integration: Often integrated with continuous integration/deployment pipelines
+4. Code Review Assistance: Can automate parts of the code review process
+5. Repository Maintenance: Helps with tasks like branch cleanup, tagging, and more
+
+Git Notes Bot:
+--------------
+This project specifically focuses on managing Git notes - a feature that allows you to attach additional information to commits without modifying the commit itself. Git notes are stored in a separate ref (refs/notes/commits by default) and can be pushed/pulled independently from the main codebase.
+
+Use Cases:
+----------
+- Adding AI-generated summaries to commits
+- Tracking additional metadata for commits
+- Creating automated documentation
+- Adding review comments or analysis results
+
+Benefits:
+---------
+- Non-invasive: Doesn't change commit history
+- Flexible: Can be added or modified after the fact
+- Separate from code: Notes can be managed independently
+- Collaborative: Team members can share notes across repositories
+

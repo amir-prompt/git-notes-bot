@@ -42,12 +42,13 @@ cat > "$HOOK_FILE" << 'EOF'
 ################################################################################
 
 # The git notes reference namespace where AI participation data is stored
-NOTES_REF="refs/notes/ai"
+# This matches Git AI's default and the GitHub Action's default
+NOTES_REF="refs/notes/commits"
 
 # Verify that the notes reference exists locally before attempting to push
 # The --verify flag ensures we're checking for exact ref name
 # The --quiet flag suppresses output
-if git show-ref --verify --quiet "refs/notes/ai"; then
+if git show-ref --verify --quiet "refs/notes/commits"; then
   echo ""
   echo "📝 Pushing git notes to keep GitHub in sync..."
   

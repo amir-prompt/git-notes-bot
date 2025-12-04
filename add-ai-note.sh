@@ -22,8 +22,8 @@
 #
 # Notes:
 #   - Uses the -f flag to force-overwrite existing notes
-#   - Stores notes in refs/notes/ai namespace
-#   - Remember to push notes: git push origin refs/notes/ai
+#   - Stores notes in refs/notes/commits namespace (matches Git AI default)
+#   - Remember to push notes: git push origin refs/notes/commits
 ################################################################################
 
 # Parse command-line arguments with defaults
@@ -44,17 +44,17 @@ if [ -n "$ADDITIONAL_INFO" ]; then
 fi
 
 # Add the note to the specified commit
-# --ref=refs/notes/ai  : Store in the 'ai' notes namespace
-# add                  : Add a note (or fail if one exists)
-# -f                   : Force overwrite if note already exists
-# -F -                 : Read note content from stdin
-# "$FULL_SHA"          : Target commit
-echo -e "$NOTE_CONTENT" | git notes --ref=refs/notes/ai add -f -F - "$FULL_SHA"
+# --ref=refs/notes/commits : Store in the 'commits' notes namespace (Git AI default)
+# add                      : Add a note (or fail if one exists)
+# -f                       : Force overwrite if note already exists
+# -F -                     : Read note content from stdin
+# "$FULL_SHA"              : Target commit
+echo -e "$NOTE_CONTENT" | git notes --ref=refs/notes/commits add -f -F - "$FULL_SHA"
 
 # Display success message with truncated SHA (first 7 characters)
 echo "✅ Added AI note to commit ${FULL_SHA:0:7}"
 echo "Note: $NOTE_CONTENT"
 echo ""
 echo "To push notes to GitHub, run:"
-echo "  git push origin refs/notes/ai"
+echo "  git push origin refs/notes/commits"
 

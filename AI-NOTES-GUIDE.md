@@ -2,6 +2,19 @@
 
 This guide explains how to track and display AI participation in your commits on GitHub using git notes.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Supported Workflows](#supported-workflows)
+- [Quick Start](#quick-start)
+- [Viewing Notes](#viewing-notes)
+- [Advanced Usage](#advanced-usage)
+- [Troubleshooting](#troubleshooting)
+- [Integration with Cursor/VS Code](#integration-with-cursorvs-code)
+- [Workflow Summary](#workflow-summary)
+- [Configuration](#configuration)
+- [Common Scenarios](#common-scenarios)
+
 ## Overview
 
 The system works in 3 steps:
@@ -204,14 +217,30 @@ git push origin refs/notes/commits --force
 
 ## Integration with Cursor/VS Code
 
-The terminal output you see:
+### Cursor with Git AI
+
+When you use Cursor with Git AI enabled, the authorship visualization you see in your terminal:
+
 ```
 you  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ ai
      0%                                  100%
      100% AI code accepted | waited 13s for ai
 ```
 
-Can be captured by enhancing the post-commit hook to parse this output from your terminal or shell history. This is editor-specific and may require custom scripting.
+**Is automatically captured as git notes!** The git-notes-bot then displays this data on your GitHub PRs with enhanced visualizations including:
+- File-by-file breakdown
+- Conversation history
+- Detailed statistics
+- Timestamps and duration
+
+### VS Code
+
+For VS Code users without Git AI, you can:
+1. Use the manual script method to add notes
+2. Install Git AI separately (if available)
+3. Create custom extensions to track AI usage
+
+The bot will display whatever git notes format you use, with full rich formatting for Git AI compatible notes.
 
 ## Workflow Summary
 
@@ -266,4 +295,39 @@ You can create multiple note refs for different purposes:
 - `refs/notes/testing` - Test coverage data
 
 Create separate workflows for each ref or configure different jobs!
+
+## Common Scenarios
+
+### Scenario 1: I'm using Cursor and want automatic tracking
+✅ **Solution**: Use Git AI (built into Cursor)
+1. Enable Git AI in Cursor settings
+2. Run `./setup-auto-push-notes.sh` for automatic syncing
+3. Commit normally - notes are created automatically
+4. Push and create PRs - visualizations appear automatically
+
+### Scenario 2: I want to track AI usage without Git AI
+✅ **Solution**: Use manual notes
+1. After each commit, run: `./add-ai-note.sh HEAD 80 "description"`
+2. Push notes: `git push origin refs/notes/commits`
+3. Create PR - notes appear as comments
+
+### Scenario 3: I want to annotate old commits
+✅ **Solution**: Retroactive notes
+1. Find commit SHAs: `git log --oneline`
+2. Add notes: `./add-ai-note.sh <sha> <percentage> "description"`
+3. Push notes: `git push origin refs/notes/commits`
+4. Notes appear on existing PRs automatically (if updated)
+
+### Scenario 4: Different percentages on local vs GitHub
+⚠️ **Problem**: Forgot to push notes
+✅ **Solution**: 
+1. Run `./setup-auto-push-notes.sh` to prevent future issues
+2. Manually push now: `git push origin refs/notes/commits`
+3. GitHub PR comment updates automatically
+
+### Scenario 5: Working with a team
+✅ **Solution**: Share notes via remote
+1. Everyone runs `./setup-auto-push-notes.sh`
+2. Fetch teammate notes: `git fetch origin 'refs/notes/*:refs/notes/*'`
+3. All team AI contributions visible on PRs
 

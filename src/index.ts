@@ -7,6 +7,117 @@ interface CommentOptions {
   commentIdentifier: string;
 }
 
+interface AIAuthorshipNote {
+  schema_version?: string;
+  git_ai_version?: string;
+  base_commit_sha?: string;
+  prompts?: {
+    [key: string]: {
+      agent_id?: {
+        tool?: string;
+        id?: string;
+        model?: string;
+      };
+      human_author?: string;
+      messages?: Array<{
+        type: string;
+        text?: string;
+        timestamp?: string;
+        name?: string;
+      }>;
+      total_additions?: number;
+      total_deletions?: number;
+      accepted_lines?: number;
+      overriden_lines?: number;
+    };
+  };
+}
+
+/**
+ * Creates a visual progress bar using Unicode characters
+ */
+function createProgressBar(value: number, total: number, width: number = 20): string {
+  const percentage = total > 0 ? (value / total) * 100 : 0;
+  const filled = Math.round((value / total) * width);
+  const empty = width - filled;
+  return `[${'█'.repeat(filled)}${'░'.repeat(empty)}] ${percentage.toFixed(0)}%`;
+}
+
+/**
+ * Formats AI authorship data in a graphical way
+ */
+function formatAIAuthorship(note: string): string {
+  try {
+    const data: AIAuthorshipNote = JSON.parse(note);
+    
+    if (!data.prompts) {
+      return `\`\`\`\n${note}\n\`\`\`\n\n`;
+    }
+
+    let output = '';
+    
+    for (const [promptId, prompt] of Object.entries(data.prompts)) {
+      // AI Agent Info
+      output += `#### 🤖 AI Assistant\n\n`;
+      if (prompt.agent_id) {
+        output += `- **Tool:** ${prompt.agent_id.tool || 'Unknown'}\n`;
+        output += `- **Model:** ${prompt.agent_id.model || 'Unknown'}\n`;
+      }
+      output += `- **Human Author:** ${prompt.human_author || 'Unknown'}\n\n`;
+
+      // Code Statistics
+      const totalChanges = (prompt.total_additions || 0) + (prompt.total_deletions || 0);
+      output += `#### 📊 Code Changes\n\n`;
+      output += `| Metric | Count | Visualization |\n`;
+      output += `|--------|-------|---------------|\n`;
+      output += `| ➕ Additions | ${prompt.total_additions || 0} | ${createProgressBar(prompt.total_additions || 0, totalChanges)} |\n`;
+      output += `| ➖ Deletions | ${prompt.total_deletions || 0} | ${createProgressBar(prompt.total_deletions || 0, totalChanges)} |\n`;
+      output += `| ✅ Accepted | ${prompt.accepted_lines || 0} | ${createProgressBar(prompt.accepted_lines || 0, prompt.total_additions || 1)} |\n`;
+      output += `| 🔄 Overridden | ${prompt.overriden_lines || 0} | ${createProgressBar(prompt.overriden_lines || 0, prompt.total_additions || 1)} |\n\n`;
+
+      // Conversation Summary
+      if (prompt.messages && prompt.messages.length > 0) {
+        output += `#### 💬 Conversation\n\n`;
+        
+        let userMessages = 0;
+        let assistantMessages = 0;
+        let toolUses = 0;
+        
+        for (const msg of prompt.messages) {
+          if (msg.type === 'user') userMessages++;
+          else if (msg.type === 'assistant') assistantMessages++;
+          else if (msg.type === 'tool_use') toolUses++;
+        }
+        
+        output += `- 👤 User messages: ${userMessages}\n`;
+        output += `- 🤖 Assistant messages: ${assistantMessages}\n`;
+        output += `- 🔧 Tool uses: ${toolUses}\n\n`;
+        
+        output += `<details>\n<summary>View full conversation</summary>\n\n`;
+        
+        for (const msg of prompt.messages) {
+          if (msg.type === 'user') {
+            output += `**👤 User:** ${msg.text}\n\n`;
+          } else if (msg.type === 'assistant' && msg.text) {
+            output += `**🤖 Assistant:** ${msg.text}\n\n`;
+          } else if (msg.type === 'tool_use' && msg.name) {
+            output += `*🔧 Used tool: ${msg.name}*\n\n`;
+          }
+        }
+        
+        output += `</details>\n\n`;
+      }
+      
+      output += `---\n\n`;
+    }
+    
+    return output;
+  } catch (error) {
+    // If parsing fails, return as plain text
+    return `\`\`\`\n${note}\n\`\`\`\n\n`;
+  }
+}
+
 /**
  * Formats git notes into a markdown comment for the PR
  */
@@ -15,15 +126,13 @@ function formatNotesAsComment(notes: GitNote[], notesRef: string): string {
     return '';
   }
 
-  let comment = `## 📝 Git Notes\n\n`;
-  comment += `*Notes from \`${notesRef}\`*\n\n`;
+  let comment = `## 🤖 AI Authorship Report\n\n`;
+  comment += `*AI contributions from \`${notesRef}\`*\n\n`;
 
   for (const { commitSha, note } of notes) {
     const shortSha = commitSha.substring(0, 7);
-    comment += `### Commit \`${shortSha}\`\n\n`;
-    comment += '```\n';
-    comment += note;
-    comment += '\n```\n\n';
+    comment += `### 📝 Commit \`${shortSha}\`\n\n`;
+    comment += formatAIAuthorship(note);
   }
 
   comment += `---\n*Posted by git-notes-bot*`;

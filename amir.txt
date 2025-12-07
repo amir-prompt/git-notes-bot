@@ -1,0 +1,11 @@
+Hello Amir!
+
+This is a test file for the git-notes-bot project.
+
+Some sample content:
+- Item 1
+- Item 2
+- Item 3
+- item 4
+Feel free to modify this content as needed.
+

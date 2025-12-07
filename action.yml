@@ -1,0 +1,34 @@
+name: 'Git Notes to PR Comment'
+description: 'Posts git notes from PR commits as beautifully formatted comments with AI authorship visualizations'
+author: 'amir-prompt'
+
+branding:
+  icon: 'message-square'
+  color: 'blue'
+
+inputs:
+  github-token:
+    description: 'GitHub token for API access'
+    required: true
+  notes-ref:
+    description: 'Git notes ref to read from (default: refs/notes/commits)'
+    required: false
+    default: 'refs/notes/commits'
+  update-existing:
+    description: 'Update existing comment instead of creating a new one (default: true)'
+    required: false
+    default: 'true'
+  add-inline-comments:
+    description: 'Add inline review comments to AI-modified files in PR diff (default: false)'
+    required: false
+    default: 'false'
+
+outputs:
+  notes-found:
+    description: 'Whether any git notes were found (true/false)'
+  notes-count:
+    description: 'Number of commits with git notes'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

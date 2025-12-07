@@ -198,15 +198,11 @@ async function aggregateDashboardData(notesRef = 'refs/notes/commits', since) {
         if (!parsed)
             continue;
         const commitDate = commit.date.split('T')[0];
-        // If the note has no additions recorded (manual commit), get real stats from git
-        let totalLines = parsed.totalAdditions;
-        let totalDeletions = parsed.totalDeletions;
-        if (totalLines === 0 && !parsed.model) {
-            // Manual commit - get actual stats from git
-            const stats = await getCommitStats(commit.sha);
-            totalLines = stats.additions;
-            totalDeletions = stats.deletions;
-        }
+        // Always get actual commit stats to match terminal display
+        // Git-ai may only track some files, but we want total commit statistics
+        const stats = await getCommitStats(commit.sha);
+        const totalLines = stats.additions;
+        const totalDeletions = stats.deletions;
         // Measure code written: only count additions (lines of code added)
         const aiLines = parsed.acceptedLines;
         const aiPercent = totalLines > 0 ? (aiLines / totalLines) * 100 : 0;

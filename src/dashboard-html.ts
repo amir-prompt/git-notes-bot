@@ -535,6 +535,9 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
                 <span class="badge ${c.aiPercent >= 80 ? 'badge-success' : c.aiPercent >= 50 ? 'badge-warning' : 'badge-info'}">
                   ${c.aiPercent.toFixed(0)}%
                 </span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: ${c.aiPercent}%"></div>
+                </div>
               </td>
               <td><small>${c.model || 'N/A'}</small></td>
             </tr>

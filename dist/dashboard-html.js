@@ -1025,8 +1025,8 @@ function generateDashboardHTML(data, repoName) {
       }
       
       filtered.commits = filteredCommits;
-      
-      // Rebuild commitsByDate from filtered commits
+
+      // Rebuild commitsByDate from filtered commits using actual commit data
       const dateMap = new Map();
       for (const commit of filteredCommits) {
         const dateStr = commit.date.split('T')[0];
@@ -1040,37 +1040,29 @@ function generateDashboardHTML(data, repoName) {
           });
         }
         const dateData = dateMap.get(dateStr);
-        
-        // Find the original commit data to get line counts
-        const originalDateData = rawData.commitsByDate.find(d => d.date === dateStr);
-        if (originalDateData) {
-          // Approximate: distribute lines evenly across commits in that date
-          const commitsInDate = rawData.commits.filter(c => c.date.split('T')[0] === dateStr).length;
-          const linesPerCommit = originalDateData.totalLines / commitsInDate;
-          const aiLinesPerCommit = originalDateData.aiLines / commitsInDate;
-          
-          dateData.count++;
-          dateData.totalLines += linesPerCommit;
-          dateData.aiLines += aiLinesPerCommit;
-        }
+
+        // Use actual commit line data instead of approximating from date averages
+        dateData.count++;
+        dateData.totalLines += commit.totalLines || 0;
+        dateData.aiLines += commit.aiLines || 0;
       }
-      
+
       // Calculate AI percentages for each date
       for (const dateData of dateMap.values()) {
-        dateData.aiPercent = dateData.totalLines > 0 
-          ? (dateData.aiLines / dateData.totalLines) * 100 
+        dateData.aiPercent = dateData.totalLines > 0
+          ? (dateData.aiLines / dateData.totalLines) * 100
           : 0;
       }
-      
+
       filtered.commitsByDate = Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-      
-      // Recalculate totals from filtered date data
+
+      // Recalculate totals from filtered commits directly
       filtered.totalCommits = filtered.commits.length;
-      filtered.totalLines = Math.round(filtered.commitsByDate.reduce((sum, d) => sum + d.totalLines, 0));
-      filtered.aiLines = Math.round(filtered.commitsByDate.reduce((sum, d) => sum + d.aiLines, 0));
+      filtered.totalLines = filteredCommits.reduce((sum, c) => sum + (c.totalLines || 0), 0);
+      filtered.aiLines = filteredCommits.reduce((sum, c) => sum + (c.aiLines || 0), 0);
       filtered.humanLines = filtered.totalLines - filtered.aiLines;
       filtered.aiPercentage = filtered.totalLines > 0 ? (filtered.aiLines / filtered.totalLines) * 100 : 0;
-      
+
       // Recalculate file count from filtered commits
       const filesSet = new Set();
       for (const file of rawData.files) {
@@ -1078,47 +1070,37 @@ function generateDashboardHTML(data, repoName) {
         filesSet.add(file.filepath);
       }
       filtered.totalFiles = filesSet.size;
-      
-      // Rebuild author statistics from filtered commits
+
+      // Rebuild author statistics from filtered commits using actual commit data
       const authorMap = new Map();
       for (const commit of filteredCommits) {
-        // Find the corresponding date data to get line counts
-        const dateStr = commit.date.split('T')[0];
-        const originalDateData = rawData.commitsByDate.find(d => d.date === dateStr);
-        
-        if (originalDateData) {
-          const commitsInDate = rawData.commits.filter(c => c.date.split('T')[0] === dateStr).length;
-          const linesPerCommit = originalDateData.totalLines / commitsInDate;
-          const aiLinesPerCommit = originalDateData.aiLines / commitsInDate;
-          
-          // Find matching author in rawData to get full author string with email
-          const fullAuthor = rawData.authors.find(a => a.author.startsWith(commit.author));
-          const authorKey = fullAuthor ? fullAuthor.author : commit.author;
-          
-          if (!authorMap.has(authorKey)) {
-            authorMap.set(authorKey, {
-              author: authorKey,
-              commits: 0,
-              totalLines: 0,
-              aiAssistedLines: 0,
-              aiUsagePercent: 0
-            });
-          }
-          
-          const authorData = authorMap.get(authorKey);
-          authorData.commits++;
-          authorData.totalLines += linesPerCommit;
-          authorData.aiAssistedLines += aiLinesPerCommit;
+        // Find matching author in rawData to get full author string with email
+        const fullAuthor = rawData.authors.find(a => a.author.startsWith(commit.author));
+        const authorKey = fullAuthor ? fullAuthor.author : commit.author;
+
+        if (!authorMap.has(authorKey)) {
+          authorMap.set(authorKey, {
+            author: authorKey,
+            commits: 0,
+            totalLines: 0,
+            aiAssistedLines: 0,
+            aiUsagePercent: 0
+          });
         }
+
+        const authorData = authorMap.get(authorKey);
+        authorData.commits++;
+        authorData.totalLines += commit.totalLines || 0;
+        authorData.aiAssistedLines += commit.aiLines || 0;
       }
-      
+
       // Calculate AI usage percentages for each author
       for (const authorData of authorMap.values()) {
-        authorData.aiUsagePercent = authorData.totalLines > 0 
-          ? (authorData.aiAssistedLines / authorData.totalLines) * 100 
+        authorData.aiUsagePercent = authorData.totalLines > 0
+          ? (authorData.aiAssistedLines / authorData.totalLines) * 100
           : 0;
       }
-      
+
       filtered.authors = Array.from(authorMap.values()).sort((a, b) => b.commits - a.commits);
       
       return filtered;

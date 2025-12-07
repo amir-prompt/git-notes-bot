@@ -76,6 +76,8 @@ export interface CommitDetail {
   author: string;
   message: string;
   aiPercent: number;
+  totalLines: number;
+  aiLines: number;
   model?: string;
   tool?: string;
 }
@@ -418,6 +420,8 @@ export async function aggregateDashboardData(
         author: commit.author,
         message: commit.message,
         aiPercent,
+        totalLines,
+        aiLines,
         model: parsed.model,
         tool: parsed.tool
       });

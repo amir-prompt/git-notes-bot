@@ -213,6 +213,55 @@ function generateDashboardHTML(data, repoName) {
       font-style: normal;
     }
     
+    .tooltip-icon {
+      display: inline-block;
+      margin-left: 8px;
+      color: #999;
+      cursor: help;
+      font-size: 0.85em;
+      position: relative;
+    }
+    
+    .tooltip-icon:hover {
+      color: #667eea;
+    }
+    
+    .tooltip-text {
+      visibility: hidden;
+      width: 280px;
+      background-color: #333;
+      color: #fff;
+      text-align: left;
+      border-radius: 8px;
+      padding: 12px;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -140px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.85em;
+      line-height: 1.4;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    .tooltip-text::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #333 transparent transparent transparent;
+    }
+    
+    .tooltip-icon:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    
     @media (max-width: 768px) {
       h1 {
         font-size: 2em;
@@ -239,39 +288,69 @@ function generateDashboardHTML(data, repoName) {
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon">📝</div>
-        <div class="stat-label">Total Commits</div>
+        <div class="stat-label">
+          Total Commits
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Total number of commits in the repository history</span>
+          </span>
+        </div>
         <div class="stat-value">${data.totalCommits}</div>
       </div>
       
       <div class="stat-card">
         <div class="stat-icon">📁</div>
-        <div class="stat-label">Files Modified</div>
+        <div class="stat-label">
+          Files Modified
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Unique count of files that have been modified across all commits</span>
+          </span>
+        </div>
         <div class="stat-value">${data.totalFiles}</div>
       </div>
       
       <div class="stat-card">
         <div class="stat-icon">➕</div>
-        <div class="stat-label">Total Lines</div>
+        <div class="stat-label">
+          Total Lines
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Sum of all lines added and deleted across all commits (additions + deletions)</span>
+          </span>
+        </div>
         <div class="stat-value">${data.totalLines.toLocaleString()}</div>
       </div>
       
       <div class="stat-card">
         <div class="stat-icon">🤖</div>
-        <div class="stat-label">AI Contribution</div>
+        <div class="stat-label">
+          AI Contribution
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Percentage of total lines that were contributed by AI (AI lines / Total lines × 100)</span>
+          </span>
+        </div>
         <div class="stat-value">${data.aiPercentage.toFixed(1)}%</div>
       </div>
     </div>
     
     <!-- Main Charts -->
     <div class="chart-container">
-      <h2 class="chart-title">📈 Commit Activity Over Time</h2>
+      <h2 class="chart-title">
+        📈 Commit Activity Over Time
+        <span class="tooltip-icon">ℹ️
+          <span class="tooltip-text">Number of commits grouped by date, showing the repository's commit frequency over time</span>
+        </span>
+      </h2>
       <div class="chart-wrapper">
         <canvas id="timelineChart"></canvas>
       </div>
     </div>
     
     <div class="chart-container">
-      <h2 class="chart-title">🎯 AI Acceptance Rate Timeline</h2>
+      <h2 class="chart-title">
+        🎯 AI Acceptance Rate Timeline
+        <span class="tooltip-icon">ℹ️
+          <span class="tooltip-text">Percentage of AI-contributed lines that were accepted per day (AI lines / Total lines × 100)</span>
+        </span>
+      </h2>
       <div class="chart-wrapper">
         <canvas id="acceptanceChart"></canvas>
       </div>
@@ -279,14 +358,24 @@ function generateDashboardHTML(data, repoName) {
     
     <div class="grid-2">
       <div class="chart-container">
-        <h2 class="chart-title">🧠 Model Usage</h2>
+        <h2 class="chart-title">
+          🧠 Model Usage
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Distribution of commits by AI model used, showing which models contributed most frequently</span>
+          </span>
+        </h2>
         <div class="chart-wrapper small">
           <canvas id="modelChart"></canvas>
         </div>
       </div>
       
       <div class="chart-container">
-        <h2 class="chart-title">🔧 Tool Distribution</h2>
+        <h2 class="chart-title">
+          🔧 Tool Distribution
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Distribution of commits by tool used (e.g., Cursor, Claude), showing which development tools were used</span>
+          </span>
+        </h2>
         <div class="chart-wrapper small">
           <canvas id="toolChart"></canvas>
         </div>
@@ -294,7 +383,12 @@ function generateDashboardHTML(data, repoName) {
     </div>
     
     <div class="chart-container">
-      <h2 class="chart-title">👥 AI vs Human Contribution</h2>
+      <h2 class="chart-title">
+        👥 AI vs Human Contribution
+        <span class="tooltip-icon">ℹ️
+          <span class="tooltip-text">Comparison of total lines contributed by AI versus human authors (based on AI metadata in git notes)</span>
+        </span>
+      </h2>
       <div class="chart-wrapper small">
         <canvas id="contributionChart"></canvas>
       </div>
@@ -303,7 +397,12 @@ function generateDashboardHTML(data, repoName) {
     <!-- Tables -->
     <div class="grid-2">
       <div class="chart-container">
-        <h2 class="chart-title">🏆 Top AI Models</h2>
+        <h2 class="chart-title">
+          🏆 Top AI Models
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Top 5 AI models by commit count. Acceptance Rate = (AI lines / Total lines) for commits using each model</span>
+          </span>
+        </h2>
         <table>
           <thead>
             <tr>
@@ -332,7 +431,12 @@ function generateDashboardHTML(data, repoName) {
       </div>
       
       <div class="chart-container">
-        <h2 class="chart-title">📂 Most Modified Files</h2>
+        <h2 class="chart-title">
+          📂 Most Modified Files
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Top 10 files by number of modifications. AI % = (AI lines / Total lines) for each file</span>
+          </span>
+        </h2>
         <table>
           <thead>
             <tr>
@@ -361,7 +465,12 @@ function generateDashboardHTML(data, repoName) {
     
     ${topAuthors.length > 0 ? `
     <div class="chart-container">
-      <h2 class="chart-title">👤 Author Statistics</h2>
+      <h2 class="chart-title">
+        👤 Author Statistics
+        <span class="tooltip-icon">ℹ️
+          <span class="tooltip-text">Top 10 authors by commit count. AI Usage = (AI lines / Total lines) across all commits by each author</span>
+        </span>
+      </h2>
       <table>
         <thead>
           <tr>
@@ -393,7 +502,12 @@ function generateDashboardHTML(data, repoName) {
     ` : ''}
     
     <div class="chart-container">
-      <h2 class="chart-title">⏱️ Recent AI-Assisted Commits</h2>
+      <h2 class="chart-title">
+        ⏱️ Recent AI-Assisted Commits
+        <span class="tooltip-icon">ℹ️
+          <span class="tooltip-text">Most recent commits with AI metadata. AI % = (AI lines / Total lines) for each commit</span>
+        </span>
+      </h2>
       <table>
         <thead>
           <tr>

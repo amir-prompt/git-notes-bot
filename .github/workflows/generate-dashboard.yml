@@ -55,8 +55,6 @@ jobs:
           keep_files: true
           destination_dir: .
           enable_jekyll: false
-          include:
-            - ai-dashboard.html
 
       - name: Comment dashboard URL
         run: |

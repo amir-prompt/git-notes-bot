@@ -447,7 +447,7 @@ function calculateAggregateStats(notes: GitNote[]): {
 /**
  * Formats git notes into a markdown comment for the PR
  */
-function formatNotesAsComment(notes: GitNote[], notesRef: string): string {
+function formatNotesAsComment(notes: GitNote[], notesRef: string, dashboardUrl?: string): string {
   if (notes.length === 0) {
     return '';
   }
@@ -455,6 +455,11 @@ function formatNotesAsComment(notes: GitNote[], notesRef: string): string {
   const stats = calculateAggregateStats(notes);
 
   let comment = `## 🤖 AI Authorship Report\n\n`;
+  
+  // Add dashboard link if available
+  if (dashboardUrl) {
+    comment += `> 📊 **[View Full AI Dashboard](${dashboardUrl})** - Complete analytics, charts, and insights\n\n`;
+  }
   
   // Add visual summary card
   comment += `<div align="center">\n\n`;
@@ -708,6 +713,7 @@ async function run(): Promise<void> {
     const notesRef = core.getInput('notes-ref') || 'refs/notes/commits';
     const updateExisting = core.getInput('update-existing') === 'true';
     const addInlineCommentsFlag = core.getInput('add-inline-comments') === 'true';
+    const customDashboardUrl = core.getInput('dashboard-url');
 
     // Get PR context
     const context = github.context;
@@ -750,7 +756,8 @@ async function run(): Promise<void> {
 
     // Format and post comment
     const octokit = github.getOctokit(token);
-    const commentBody = formatNotesAsComment(notes, notesRef);
+    const dashboardUrl = customDashboardUrl || `https://${owner}.github.io/${repo}/ai-dashboard.html`;
+    const commentBody = formatNotesAsComment(notes, notesRef, dashboardUrl);
 
     await postComment(octokit, owner, repo, prNumber, commentBody, {
       updateExisting,

@@ -41,9 +41,9 @@ jobs:
       - name: Generate dashboard
         run: |
           if [ -n "${{ github.event.inputs.since }}" ]; then
-            npx ts-node generate-dashboard.ts --since "${{ github.event.inputs.since }}"
+            npx ts-node generate-dashboard.ts --notes-ref refs/notes/ai --since "${{ github.event.inputs.since }}"
           else
-            npx ts-node generate-dashboard.ts
+            npx ts-node generate-dashboard.ts --notes-ref refs/notes/ai
           fi
 
       - name: Deploy to GitHub Pages

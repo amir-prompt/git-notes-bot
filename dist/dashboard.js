@@ -317,6 +317,8 @@ async function aggregateDashboardData(notesRef = 'refs/notes/commits', since) {
                 author: commit.author,
                 message: commit.message,
                 aiPercent,
+                totalLines,
+                aiLines,
                 model: parsed.model,
                 tool: parsed.tool
             });

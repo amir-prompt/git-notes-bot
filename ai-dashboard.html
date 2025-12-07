@@ -411,7 +411,7 @@
             <span class="tooltip-text">Total number of commits in the repository history</span>
           </span>
         </div>
-        <div class="stat-value" id="statTotalCommits">37</div>
+        <div class="stat-value" id="statTotalCommits">38</div>
       </div>
       
       <div class="stat-card">
@@ -422,7 +422,7 @@
             <span class="tooltip-text">Unique count of files that have been modified across all commits</span>
           </span>
         </div>
-        <div class="stat-value" id="statTotalFiles">51</div>
+        <div class="stat-value" id="statTotalFiles">52</div>
       </div>
       
       <div class="stat-card">
@@ -433,7 +433,7 @@
             <span class="tooltip-text">Sum of all lines added and deleted across all commits (additions + deletions)</span>
           </span>
         </div>
-        <div class="stat-value" id="statTotalLines">15,290</div>
+        <div class="stat-value" id="statTotalLines">15,376</div>
       </div>
       
       <div class="stat-card">
@@ -444,7 +444,7 @@
             <span class="tooltip-text">Percentage of total lines that were contributed by AI (AI lines / Total lines × 100)</span>
           </span>
         </div>
-        <div class="stat-value" id="statAIPercentage">25.5%</div>
+        <div class="stat-value" id="statAIPercentage">25.6%</div>
       </div>
     </div>
     
@@ -522,13 +522,13 @@
         <div style="padding: 20px;">
           <div style="margin-bottom: 20px;">
             <div style="font-size: 1.2em; color: #667eea; font-weight: bold;">AI Contribution</div>
-            <div style="font-size: 2.5em; font-weight: bold; color: #667eea;" id="summaryAILines">3,906</div>
-            <div style="color: #666;" id="summaryAIPercent">lines (25.5%)</div>
+            <div style="font-size: 2.5em; font-weight: bold; color: #667eea;" id="summaryAILines">3,934</div>
+            <div style="color: #666;" id="summaryAIPercent">lines (25.6%)</div>
           </div>
           <div>
             <div style="font-size: 1.2em; color: #48bb78; font-weight: bold;">Human Contribution</div>
-            <div style="font-size: 2.5em; font-weight: bold; color: #48bb78;" id="summaryHumanLines">11,384</div>
-            <div style="color: #666;" id="summaryHumanPercent">lines (74.5%)</div>
+            <div style="font-size: 2.5em; font-weight: bold; color: #48bb78;" id="summaryHumanLines">11,442</div>
+            <div style="color: #666;" id="summaryHumanPercent">lines (74.4%)</div>
           </div>
         </div>
       </div>
@@ -580,13 +580,13 @@
             
               <tr>
                 <td><strong>claude-opus-4-5-20251101</strong></td>
-                <td>3</td>
+                <td>4</td>
                 <td>
                   <span class="badge badge-info">
-                    26.7%
+                    27.0%
                   </span>
                   <div class="progress-bar">
-                    <div class="progress-fill" style="width: 26.73076923076923%"></div>
+                    <div class="progress-fill" style="width: 27.03523693803159%"></div>
                   </div>
                 </td>
               </tr>
@@ -637,6 +637,14 @@
                 </tr>
               
                 <tr>
+                  <td title="src/dashboard.ts"><code>dashboard.ts</code></td>
+                  <td>5</td>
+                  <td>
+                    <span class="badge badge-info">47%</span>
+                  </td>
+                </tr>
+              
+                <tr>
                   <td title="07845fb9723bbada"><code>07845fb9723bbada</code></td>
                   <td>5</td>
                   <td>
@@ -653,10 +661,10 @@
                 </tr>
               
                 <tr>
-                  <td title="src/dashboard.ts"><code>dashboard.ts</code></td>
+                  <td title="src/dashboard-html.ts"><code>dashboard-html.ts</code></td>
                   <td>4</td>
                   <td>
-                    <span class="badge badge-info">53%</span>
+                    <span class="badge badge-info">46%</span>
                   </td>
                 </tr>
               
@@ -681,14 +689,6 @@
                   <td>4</td>
                   <td>
                     <span class="badge badge-info">101%</span>
-                  </td>
-                </tr>
-              
-                <tr>
-                  <td title="b41a02feee42f05e"><code>b41a02feee42f05e</code></td>
-                  <td>4</td>
-                  <td>
-                    <span class="badge badge-info">99%</span>
                   </td>
                 </tr>
               
@@ -718,14 +718,14 @@
           
             <tr>
               <td><strong>Amir Barshavit <amir@prompt.security></strong></td>
-              <td>30</td>
-              <td>6,215</td>
+              <td>31</td>
+              <td>6,301</td>
               <td>
                 <span class="badge badge-warning">
-                  62.8%
+                  62.4%
                 </span>
                 <div class="progress-bar">
-                  <div class="progress-fill" style="width: 62.84794851166533%"></div>
+                  <div class="progress-fill" style="width: 62.43453420092049%"></div>
                 </div>
               </td>
             </tr>
@@ -753,6 +753,21 @@
           </tr>
         </thead>
         <tbody id="recentCommitsTable">
+          
+            <tr>
+              <td><code>150316e</code></td>
+              <td>Amir Barshavit</td>
+              <td title="Fix incorrect AI percentage calculation in filtered dashboard views">Fix incorrect AI percentage calculation in filtere...</td>
+              <td>
+                <span class="badge badge-info">
+                  33%
+                </span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 32.55813953488372%"></div>
+                </div>
+              </td>
+              <td><small>claude-opus-4-5-20251101</small></td>
+            </tr>
           
             <tr>
               <td><code>add4567</code></td>
@@ -1039,28 +1054,13 @@
               <td><small>claude-4.5-sonnet-thinking</small></td>
             </tr>
           
-            <tr>
-              <td><code>ddb3d1d</code></td>
-              <td>Amir Barshavit</td>
-              <td title="asdadf">asdadf</td>
-              <td>
-                <span class="badge badge-success">
-                  108%
-                </span>
-                <div class="progress-bar">
-                  <div class="progress-fill" style="width: 107.6923076923077%"></div>
-                </div>
-              </td>
-              <td><small>claude-4.5-sonnet-thinking</small></td>
-            </tr>
-          
         </tbody>
       </table>
     </div>
     
     <footer>
       <p>Generated by <strong>git-notes-bot</strong> 🤖</p>
-      <p><small>Last updated: 12/7/2025, 11:42:05 AM</small></p>
+      <p><small>Last updated: 12/7/2025, 11:53:59 AM</small></p>
     </footer>
   </div>
   
@@ -1085,7 +1085,7 @@
         labels: ["2025-12-04","2025-12-05","2025-12-07"],
         datasets: [{
           label: 'Commits',
-          data: [17,3,15],
+          data: [17,3,16],
           borderColor: chartColors.primary,
           backgroundColor: chartColors.primary + '20',
           tension: 0.4,
@@ -1119,7 +1119,7 @@
         labels: ["2025-12-04","2025-12-05","2025-12-07"],
         datasets: [{
           label: 'AI Acceptance Rate (%)',
-          data: ["59.3","100.0","11.4"],
+          data: ["59.3","100.0","11.6"],
           borderColor: chartColors.success,
           backgroundColor: chartColors.success + '20',
           tension: 0.4,
@@ -1154,7 +1154,7 @@
       data: {
         labels: ["claude-4.5-sonnet-thinking","claude-opus-4-5-20251101"],
         datasets: [{
-          data: [27,3],
+          data: [27,4],
           backgroundColor: [
             chartColors.primary,
             chartColors.secondary,
@@ -1181,7 +1181,7 @@
       data: {
         labels: ["claude","cursor"],
         datasets: [{
-          data: [3,27],
+          data: [4,27],
           backgroundColor: [
             chartColors.primary,
             chartColors.success,
@@ -1208,14 +1208,14 @@
         labels: ["2025-12-04","2025-12-05","2025-12-07"],
         datasets: [{
           label: 'AI Lines',
-          data: [2194,437,1275],
+          data: [2194,437,1303],
           borderColor: chartColors.primary,
           backgroundColor: chartColors.primary + '20',
           tension: 0.4,
           fill: false
         }, {
           label: 'Human Lines',
-          data: [1505,0,9879],
+          data: [1505,0,9937],
           borderColor: chartColors.success,
           backgroundColor: chartColors.success + '20',
           tension: 0.4,
@@ -1245,7 +1245,7 @@
       data: {
         labels: ['AI Contribution', 'Human Contribution'],
         datasets: [{
-          data: [3906, 11384],
+          data: [3934, 11442],
           backgroundColor: [
             chartColors.primary,
             chartColors.success
@@ -1266,7 +1266,7 @@
               label: function(context) {
                 const label = context.label || '';
                 const value = context.parsed || 0;
-                const total = 15290;
+                const total = 15376;
                 const percentage = ((value / total) * 100).toFixed(1);
                 return label + ': ' + value.toLocaleString() + ' lines (' + percentage + '%)';
               }
@@ -1278,18 +1278,18 @@
     
     // Store raw data for filtering
     const rawData = {
-      commits: [{"sha":"add4567a46763caf58fd42584b697996278da5fa","shortSha":"add4567","date":"2025-12-07T13:41:26+02:00","author":"Amir Barshavit","message":"add installation script for git-notes-bot setup","aiPercent":100,"model":"claude-opus-4-5-20251101","tool":"claude"},{"sha":"e417a3a9e04d0907abeb6614e73d710ddf2ad9e2","shortSha":"e417a3a","date":"2025-12-07T13:28:45+02:00","author":"Amir Barshavit","message":"fix filtring","aiPercent":50.259515570934255,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"f657e7bfb5156ae5cd313ac242be7c0cbdbfe1a0","shortSha":"f657e7b","date":"2025-12-07T11:54:06+02:00","author":"Amir Barshavit","message":"fix stat bug","aiPercent":43.75,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"a0e5d573fc1e4f22f38fe7b8a4b9a31b764da198","shortSha":"a0e5d57","date":"2025-12-07T11:45:38+02:00","author":"Amir Barshavit","message":"add tooltips","aiPercent":39.76377952755906,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"fa7e98aabffd880d8d428ca1dfa8e40cd8a3d76b","shortSha":"fa7e98a","date":"2025-12-07T11:39:48+02:00","author":"Amir Barshavit","message":"fix data","aiPercent":53.84615384615385,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"c7285fbbb242548213ef4ad58dedf20c48fe59c4","shortSha":"c7285fb","date":"2025-12-07T11:32:10+02:00","author":"Amir Barshavit","message":"add lines","aiPercent":0},{"sha":"8ee85785d70fce0341ca5d9654790481ca9ba8c4","shortSha":"8ee8578","date":"2025-12-07T11:30:06+02:00","author":"Amir Barshavit","message":"aaaaaa","aiPercent":0},{"sha":"b14ef83bdc8ac5a718f056ba617c93e0a2b2bb07","shortSha":"b14ef83","date":"2025-12-07T11:27:17+02:00","author":"Amir Barshavit","message":"test","aiPercent":50,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"2a290b900a50ad9302e62e8d56b86b24bae07d1a","shortSha":"2a290b9","date":"2025-12-07T11:15:23+02:00","author":"Amir Barshavit","message":"fff","aiPercent":51.724137931034484,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"fbe675e86a4acb80a96b0fdc3fb2578ca65e94c7","shortSha":"fbe675e","date":"2025-12-07T11:08:02+02:00","author":"Amir Barshavit","message":"test stat","aiPercent":0},{"sha":"218ef29e3e0c38326577272cd044d91136eea076","shortSha":"218ef29","date":"2025-12-07T11:03:30+02:00","author":"Amir Barshavit","message":"Fix YAML syntax error in dashboard workflow","aiPercent":0,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"134d2b22bb4507df4df779f2ce2aafa3cb33602f","shortSha":"134d2b2","date":"2025-12-07T10:56:12+02:00","author":"Amir Barshavit","message":"blabla|","aiPercent":37.5,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"9dba3ea4f341be52d7e53f9136c2bd9597fefd82","shortSha":"9dba3ea","date":"2025-12-07T10:36:05+02:00","author":"Amir Barshavit","message":"Add dashboard link to AI authorship reports","aiPercent":91.48936170212765,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"176bebf6b01ac99691203e9a4c77e1f025bfef28","shortSha":"176bebf","date":"2025-12-07T10:31:43+02:00","author":"Amir Barshavit","message":"Add text.txt with poem","aiPercent":100,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"cfa840fdc6bdb8e86881bd1d41202f8e639a898c","shortSha":"cfa840f","date":"2025-12-07T10:24:34+02:00","author":"Amir Barshavit","message":"add dashbaord","aiPercent":0},{"sha":"9b5cb146f26c93bef869f73b902c5f0c76368d43","shortSha":"9b5cb14","date":"2025-12-05T00:09:38+02:00","author":"Amir Barshavit","message":"eeeee","aiPercent":100,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"2c55f4f471eec4804de9679937a9a5c116fe4660","shortSha":"2c55f4f","date":"2025-12-05T00:06:00+02:00","author":"Amir Barshavit","message":"sdsfasf","aiPercent":100,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"7c39c7aa04045a7774d2ab99f22e9827af933207","shortSha":"7c39c7a","date":"2025-12-05T00:02:07+02:00","author":"Amir Barshavit","message":"ssss","aiPercent":100,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"0b2b48e3e44f638d0720a53ce54f5568544e80d9","shortSha":"0b2b48e","date":"2025-12-04T23:59:18+02:00","author":"Amir Barshavit","message":"fff","aiPercent":82.10526315789474,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"ddb3d1de184cfdc27b75c827538536b844d2f8d1","shortSha":"ddb3d1d","date":"2025-12-04T23:49:09+02:00","author":"Amir Barshavit","message":"asdadf","aiPercent":107.6923076923077,"model":"claude-4.5-sonnet-thinking","tool":"cursor"}],
-      commitsByDate: [{"date":"2025-12-04","count":17,"aiLines":2194,"totalLines":3699,"aiPercent":59.313327926466606},{"date":"2025-12-05","count":3,"aiLines":437,"totalLines":437,"aiPercent":100},{"date":"2025-12-07","count":15,"aiLines":1275,"totalLines":11154,"aiPercent":11.4308768154922}],
-      models: [{"model":"claude-4.5-sonnet-thinking","commits":27,"lines":4655,"acceptedLines":3489,"acceptanceRate":74.95166487647691},{"model":"claude-opus-4-5-20251101","commits":3,"lines":1560,"acceptedLines":417,"acceptanceRate":26.73076923076923}],
-      tools: [{"tool":"cursor","commits":27,"lines":4655},{"tool":"claude","commits":3,"lines":1560}],
-      authors: [{"author":"Amir Barshavit <amir@prompt.security>","commits":30,"totalLines":6215,"aiAssistedLines":3906,"aiUsagePercent":62.84794851166533}],
-      files: [{"filepath":"d3ac4d12e93b00b6","modifications":9,"aiLines":577,"totalLines":662,"lastModified":"2025-12-04T23:59:18+02:00"},{"filepath":"src/index.ts","modifications":7,"aiLines":254.38636363636363,"totalLines":357.94696969696975,"lastModified":"2025-12-04T16:58:46+02:00"},{"filepath":"ae16f7e9b721cde0","modifications":7,"aiLines":272.5454545454545,"totalLines":268.4545454545455,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"07845fb9723bbada","modifications":5,"aiLines":30.999999999999996,"totalLines":58.49999999999999,"lastModified":"2025-12-07T11:15:23+02:00"},{"filepath":"3d099ee320fed3f7","modifications":5,"aiLines":53,"totalLines":57,"lastModified":"2025-12-07T10:31:43+02:00"},{"filepath":"src/dashboard.ts","modifications":4,"aiLines":31.083333333333332,"totalLines":59.166666666666664,"lastModified":"2025-12-07T11:15:23+02:00"},{"filepath":"test.txt","modifications":4,"aiLines":38.5,"totalLines":41,"lastModified":"2025-12-04T16:43:06+02:00"},{"filepath":"README.md","modifications":4,"aiLines":148.80303030303028,"totalLines":165.53030303030303,"lastModified":"2025-12-04T16:39:44+02:00"},{"filepath":"AI-NOTES-GUIDE.md","modifications":4,"aiLines":143.3030303030303,"totalLines":142.03030303030306,"lastModified":"2025-12-04T16:53:07+02:00"},{"filepath":"b41a02feee42f05e","modifications":4,"aiLines":42.5,"totalLines":43,"lastModified":"2025-12-04T17:28:22+02:00"},{"filepath":"src/dashboard-html.ts","modifications":3,"aiLines":168.45,"totalLines":362.2,"lastModified":"2025-12-07T11:45:38+02:00"},{"filepath":"action.yml","modifications":3,"aiLines":146.38636363636363,"totalLines":164.11363636363637,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"setup-auto-push-notes.sh","modifications":3,"aiLines":46.916666666666664,"totalLines":46.666666666666664,"lastModified":"2025-12-04T19:56:48+02:00"},{"filepath":"add-ai-note.sh","modifications":3,"aiLines":93.25,"totalLines":93,"lastModified":"2025-12-04T16:53:07+02:00"},{"filepath":"88f63ed45eff3364","modifications":3,"aiLines":84,"totalLines":146.5,"lastModified":"2025-12-04T16:58:46+02:00"},{"filepath":"5e655ac08cfe792d","modifications":2,"aiLines":3.5,"totalLines":8,"lastModified":"2025-12-07T11:54:06+02:00"},{"filepath":"a27fa58cc9be8bb3","modifications":2,"aiLines":115.27272727272727,"totalLines":114.72727272727273,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"f1cacab3a6a75486","modifications":2,"aiLines":40.5,"totalLines":42,"lastModified":"2025-12-04T20:05:28+02:00"},{"filepath":"8155a6a363a0a455","modifications":2,"aiLines":118,"totalLines":118,"lastModified":"2025-12-04T16:53:07+02:00"},{"filepath":"6e330eb5c1a083c9","modifications":2,"aiLines":1,"totalLines":572.5,"lastModified":"2025-12-04T16:01:26+02:00"},{"filepath":"install.sh","modifications":1,"aiLines":207.5,"totalLines":207.5,"lastModified":"2025-12-07T13:41:26+02:00"},{"filepath":"6adaf235d2d4ee04","modifications":1,"aiLines":207.5,"totalLines":207.5,"lastModified":"2025-12-07T13:41:26+02:00"},{"filepath":"ac04f0ff6fb37089","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"55f322c1a322216b","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"e4bf386fe249ce9d","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"e18f3f684122dfc0","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"5f5672ae3ded3fde","modifications":1,"aiLines":50.5,"totalLines":127,"lastModified":"2025-12-07T11:45:38+02:00"},{"filepath":"generate-dashboard.ts","modifications":1,"aiLines":0.8333333333333334,"totalLines":1.6666666666666667,"lastModified":"2025-12-07T11:27:17+02:00"},{"filepath":"generate-dashboard.sh","modifications":1,"aiLines":0.8333333333333334,"totalLines":1.6666666666666667,"lastModified":"2025-12-07T11:27:17+02:00"},{"filepath":"5129a266849522be","modifications":1,"aiLines":1.5,"totalLines":4,"lastModified":"2025-12-07T10:56:12+02:00"},{"filepath":".github/workflows/generate-dashboard.yml","modifications":1,"aiLines":10.75,"totalLines":11.75,"lastModified":"2025-12-07T10:36:05+02:00"},{"filepath":".github/workflows/pr-dashboard-link.yml","modifications":1,"aiLines":10.75,"totalLines":11.75,"lastModified":"2025-12-07T10:36:05+02:00"},{"filepath":"text.txt","modifications":1,"aiLines":10,"totalLines":10,"lastModified":"2025-12-07T10:31:43+02:00"},{"filepath":"6add4fc2c5fa6ed0","modifications":1,"aiLines":16,"totalLines":16,"lastModified":"2025-12-05T00:09:38+02:00"},{"filepath":"push-notes-now.sh","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":".github/workflows/git-notes-comment.yml","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":"FIX-APPLIED.md","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":"QUICK-FIX.md","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":"git-bot-info.txt","modifications":1,"aiLines":15.5,"totalLines":15.5,"lastModified":"2025-12-05T00:02:07+02:00"},{"filepath":"b0e3659bf211801f","modifications":1,"aiLines":15.5,"totalLines":15.5,"lastModified":"2025-12-05T00:02:07+02:00"},{"filepath":"INLINE-COMMENTS.md","modifications":1,"aiLines":78,"totalLines":95,"lastModified":"2025-12-04T23:59:18+02:00"},{"filepath":"IMPLEMENTATION-SUMMARY.md","modifications":1,"aiLines":78,"totalLines":95,"lastModified":"2025-12-04T23:59:18+02:00"},{"filepath":"dist/index.js","modifications":1,"aiLines":57.63636363636363,"totalLines":57.36363636363637,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"19c18ffd94ba5046","modifications":1,"aiLines":24,"totalLines":47.333333333333336,"lastModified":"2025-12-04T23:37:27+02:00"},{"filepath":"d0ca3b06e428793e","modifications":1,"aiLines":24,"totalLines":47.333333333333336,"lastModified":"2025-12-04T23:37:27+02:00"},{"filepath":"amir.txt","modifications":1,"aiLines":5,"totalLines":5.5,"lastModified":"2025-12-04T20:06:51+02:00"},{"filepath":"435f67c15803c545","modifications":1,"aiLines":5,"totalLines":5.5,"lastModified":"2025-12-04T20:06:51+02:00"},{"filepath":"test_new.txt","modifications":1,"aiLines":4.5,"totalLines":5,"lastModified":"2025-12-04T17:28:22+02:00"},{"filepath":"681ea6b50943c1a9","modifications":1,"aiLines":12.5,"totalLines":12.5,"lastModified":"2025-12-04T16:55:15+02:00"},{"filepath":"9c5ded02620b9558","modifications":1,"aiLines":8.5,"totalLines":8.5,"lastModified":"2025-12-04T16:43:06+02:00"},{"filepath":".gitignore","modifications":1,"aiLines":0.5,"totalLines":572,"lastModified":"2025-12-04T16:01:26+02:00"}],
-      totalCommits: 37,
-      totalFiles: 51,
-      totalLines: 15290,
-      aiLines: 3906,
-      humanLines: 11384,
-      aiPercentage: 25.5461085676913
+      commits: [{"sha":"150316ee8baacfa917d6a81116e38cf566545683","shortSha":"150316e","date":"2025-12-07T13:53:32+02:00","author":"Amir Barshavit","message":"Fix incorrect AI percentage calculation in filtered dashboard views","aiPercent":32.55813953488372,"totalLines":86,"aiLines":28,"model":"claude-opus-4-5-20251101","tool":"claude"},{"sha":"add4567a46763caf58fd42584b697996278da5fa","shortSha":"add4567","date":"2025-12-07T13:41:26+02:00","author":"Amir Barshavit","message":"add installation script for git-notes-bot setup","aiPercent":100,"totalLines":415,"aiLines":415,"model":"claude-opus-4-5-20251101","tool":"claude"},{"sha":"e417a3a9e04d0907abeb6614e73d710ddf2ad9e2","shortSha":"e417a3a","date":"2025-12-07T13:28:45+02:00","author":"Amir Barshavit","message":"fix filtring","aiPercent":50.259515570934255,"totalLines":1156,"aiLines":581,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"f657e7bfb5156ae5cd313ac242be7c0cbdbfe1a0","shortSha":"f657e7b","date":"2025-12-07T11:54:06+02:00","author":"Amir Barshavit","message":"fix stat bug","aiPercent":43.75,"totalLines":16,"aiLines":7,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"a0e5d573fc1e4f22f38fe7b8a4b9a31b764da198","shortSha":"a0e5d57","date":"2025-12-07T11:45:38+02:00","author":"Amir Barshavit","message":"add tooltips","aiPercent":39.76377952755906,"totalLines":254,"aiLines":101,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"fa7e98aabffd880d8d428ca1dfa8e40cd8a3d76b","shortSha":"fa7e98a","date":"2025-12-07T11:39:48+02:00","author":"Amir Barshavit","message":"fix data","aiPercent":53.84615384615385,"totalLines":78,"aiLines":42,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"c7285fbbb242548213ef4ad58dedf20c48fe59c4","shortSha":"c7285fb","date":"2025-12-07T11:32:10+02:00","author":"Amir Barshavit","message":"add lines","aiPercent":0,"totalLines":67,"aiLines":0},{"sha":"8ee85785d70fce0341ca5d9654790481ca9ba8c4","shortSha":"8ee8578","date":"2025-12-07T11:30:06+02:00","author":"Amir Barshavit","message":"aaaaaa","aiPercent":0,"totalLines":4,"aiLines":0},{"sha":"b14ef83bdc8ac5a718f056ba617c93e0a2b2bb07","shortSha":"b14ef83","date":"2025-12-07T11:27:17+02:00","author":"Amir Barshavit","message":"test","aiPercent":50,"totalLines":10,"aiLines":5,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"2a290b900a50ad9302e62e8d56b86b24bae07d1a","shortSha":"2a290b9","date":"2025-12-07T11:15:23+02:00","author":"Amir Barshavit","message":"fff","aiPercent":51.724137931034484,"totalLines":29,"aiLines":15,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"fbe675e86a4acb80a96b0fdc3fb2578ca65e94c7","shortSha":"fbe675e","date":"2025-12-07T11:08:02+02:00","author":"Amir Barshavit","message":"test stat","aiPercent":0,"totalLines":4653,"aiLines":0},{"sha":"218ef29e3e0c38326577272cd044d91136eea076","shortSha":"218ef29","date":"2025-12-07T11:03:30+02:00","author":"Amir Barshavit","message":"Fix YAML syntax error in dashboard workflow","aiPercent":0,"totalLines":0,"aiLines":0,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"134d2b22bb4507df4df779f2ce2aafa3cb33602f","shortSha":"134d2b2","date":"2025-12-07T10:56:12+02:00","author":"Amir Barshavit","message":"blabla|","aiPercent":37.5,"totalLines":8,"aiLines":3,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"9dba3ea4f341be52d7e53f9136c2bd9597fefd82","shortSha":"9dba3ea","date":"2025-12-07T10:36:05+02:00","author":"Amir Barshavit","message":"Add dashboard link to AI authorship reports","aiPercent":91.48936170212765,"totalLines":94,"aiLines":86,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"176bebf6b01ac99691203e9a4c77e1f025bfef28","shortSha":"176bebf","date":"2025-12-07T10:31:43+02:00","author":"Amir Barshavit","message":"Add text.txt with poem","aiPercent":100,"totalLines":20,"aiLines":20,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"cfa840fdc6bdb8e86881bd1d41202f8e639a898c","shortSha":"cfa840f","date":"2025-12-07T10:24:34+02:00","author":"Amir Barshavit","message":"add dashbaord","aiPercent":0,"totalLines":4350,"aiLines":0},{"sha":"9b5cb146f26c93bef869f73b902c5f0c76368d43","shortSha":"9b5cb14","date":"2025-12-05T00:09:38+02:00","author":"Amir Barshavit","message":"eeeee","aiPercent":100,"totalLines":32,"aiLines":32,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"2c55f4f471eec4804de9679937a9a5c116fe4660","shortSha":"2c55f4f","date":"2025-12-05T00:06:00+02:00","author":"Amir Barshavit","message":"sdsfasf","aiPercent":100,"totalLines":374,"aiLines":374,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"7c39c7aa04045a7774d2ab99f22e9827af933207","shortSha":"7c39c7a","date":"2025-12-05T00:02:07+02:00","author":"Amir Barshavit","message":"ssss","aiPercent":100,"totalLines":31,"aiLines":31,"model":"claude-4.5-sonnet-thinking","tool":"cursor"},{"sha":"0b2b48e3e44f638d0720a53ce54f5568544e80d9","shortSha":"0b2b48e","date":"2025-12-04T23:59:18+02:00","author":"Amir Barshavit","message":"fff","aiPercent":82.10526315789474,"totalLines":950,"aiLines":780,"model":"claude-4.5-sonnet-thinking","tool":"cursor"}],
+      commitsByDate: [{"date":"2025-12-04","count":17,"aiLines":2194,"totalLines":3699,"aiPercent":59.313327926466606},{"date":"2025-12-05","count":3,"aiLines":437,"totalLines":437,"aiPercent":100},{"date":"2025-12-07","count":16,"aiLines":1303,"totalLines":11240,"aiPercent":11.592526690391459}],
+      models: [{"model":"claude-4.5-sonnet-thinking","commits":27,"lines":4655,"acceptedLines":3489,"acceptanceRate":74.95166487647691},{"model":"claude-opus-4-5-20251101","commits":4,"lines":1646,"acceptedLines":445,"acceptanceRate":27.03523693803159}],
+      tools: [{"tool":"cursor","commits":27,"lines":4655},{"tool":"claude","commits":4,"lines":1646}],
+      authors: [{"author":"Amir Barshavit <amir@prompt.security>","commits":31,"totalLines":6301,"aiAssistedLines":3934,"aiUsagePercent":62.43453420092049}],
+      files: [{"filepath":"d3ac4d12e93b00b6","modifications":9,"aiLines":577,"totalLines":662,"lastModified":"2025-12-04T23:59:18+02:00"},{"filepath":"src/index.ts","modifications":7,"aiLines":254.38636363636363,"totalLines":357.94696969696975,"lastModified":"2025-12-04T16:58:46+02:00"},{"filepath":"ae16f7e9b721cde0","modifications":7,"aiLines":272.5454545454545,"totalLines":268.4545454545455,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"src/dashboard.ts","modifications":5,"aiLines":38.08333333333333,"totalLines":80.66666666666667,"lastModified":"2025-12-07T11:15:23+02:00"},{"filepath":"07845fb9723bbada","modifications":5,"aiLines":30.999999999999996,"totalLines":58.49999999999999,"lastModified":"2025-12-07T11:15:23+02:00"},{"filepath":"3d099ee320fed3f7","modifications":5,"aiLines":53,"totalLines":57,"lastModified":"2025-12-07T10:31:43+02:00"},{"filepath":"src/dashboard-html.ts","modifications":4,"aiLines":175.45,"totalLines":383.7,"lastModified":"2025-12-07T11:45:38+02:00"},{"filepath":"test.txt","modifications":4,"aiLines":38.5,"totalLines":41,"lastModified":"2025-12-04T16:43:06+02:00"},{"filepath":"README.md","modifications":4,"aiLines":148.80303030303028,"totalLines":165.53030303030303,"lastModified":"2025-12-04T16:39:44+02:00"},{"filepath":"AI-NOTES-GUIDE.md","modifications":4,"aiLines":143.3030303030303,"totalLines":142.03030303030306,"lastModified":"2025-12-04T16:53:07+02:00"},{"filepath":"b41a02feee42f05e","modifications":4,"aiLines":42.5,"totalLines":43,"lastModified":"2025-12-04T17:28:22+02:00"},{"filepath":"action.yml","modifications":3,"aiLines":146.38636363636363,"totalLines":164.11363636363637,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"setup-auto-push-notes.sh","modifications":3,"aiLines":46.916666666666664,"totalLines":46.666666666666664,"lastModified":"2025-12-04T19:56:48+02:00"},{"filepath":"add-ai-note.sh","modifications":3,"aiLines":93.25,"totalLines":93,"lastModified":"2025-12-04T16:53:07+02:00"},{"filepath":"88f63ed45eff3364","modifications":3,"aiLines":84,"totalLines":146.5,"lastModified":"2025-12-04T16:58:46+02:00"},{"filepath":"15f2019f830b969d","modifications":2,"aiLines":14,"totalLines":43,"lastModified":"2025-12-07T13:53:32+02:00"},{"filepath":"5e655ac08cfe792d","modifications":2,"aiLines":3.5,"totalLines":8,"lastModified":"2025-12-07T11:54:06+02:00"},{"filepath":"a27fa58cc9be8bb3","modifications":2,"aiLines":115.27272727272727,"totalLines":114.72727272727273,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"f1cacab3a6a75486","modifications":2,"aiLines":40.5,"totalLines":42,"lastModified":"2025-12-04T20:05:28+02:00"},{"filepath":"8155a6a363a0a455","modifications":2,"aiLines":118,"totalLines":118,"lastModified":"2025-12-04T16:53:07+02:00"},{"filepath":"6e330eb5c1a083c9","modifications":2,"aiLines":1,"totalLines":572.5,"lastModified":"2025-12-04T16:01:26+02:00"},{"filepath":"install.sh","modifications":1,"aiLines":207.5,"totalLines":207.5,"lastModified":"2025-12-07T13:41:26+02:00"},{"filepath":"6adaf235d2d4ee04","modifications":1,"aiLines":207.5,"totalLines":207.5,"lastModified":"2025-12-07T13:41:26+02:00"},{"filepath":"ac04f0ff6fb37089","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"55f322c1a322216b","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"e4bf386fe249ce9d","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"e18f3f684122dfc0","modifications":1,"aiLines":116.2,"totalLines":231.2,"lastModified":"2025-12-07T13:28:45+02:00"},{"filepath":"5f5672ae3ded3fde","modifications":1,"aiLines":50.5,"totalLines":127,"lastModified":"2025-12-07T11:45:38+02:00"},{"filepath":"generate-dashboard.ts","modifications":1,"aiLines":0.8333333333333334,"totalLines":1.6666666666666667,"lastModified":"2025-12-07T11:27:17+02:00"},{"filepath":"generate-dashboard.sh","modifications":1,"aiLines":0.8333333333333334,"totalLines":1.6666666666666667,"lastModified":"2025-12-07T11:27:17+02:00"},{"filepath":"5129a266849522be","modifications":1,"aiLines":1.5,"totalLines":4,"lastModified":"2025-12-07T10:56:12+02:00"},{"filepath":".github/workflows/generate-dashboard.yml","modifications":1,"aiLines":10.75,"totalLines":11.75,"lastModified":"2025-12-07T10:36:05+02:00"},{"filepath":".github/workflows/pr-dashboard-link.yml","modifications":1,"aiLines":10.75,"totalLines":11.75,"lastModified":"2025-12-07T10:36:05+02:00"},{"filepath":"text.txt","modifications":1,"aiLines":10,"totalLines":10,"lastModified":"2025-12-07T10:31:43+02:00"},{"filepath":"6add4fc2c5fa6ed0","modifications":1,"aiLines":16,"totalLines":16,"lastModified":"2025-12-05T00:09:38+02:00"},{"filepath":"push-notes-now.sh","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":".github/workflows/git-notes-comment.yml","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":"FIX-APPLIED.md","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":"QUICK-FIX.md","modifications":1,"aiLines":46.75,"totalLines":46.75,"lastModified":"2025-12-05T00:06:00+02:00"},{"filepath":"git-bot-info.txt","modifications":1,"aiLines":15.5,"totalLines":15.5,"lastModified":"2025-12-05T00:02:07+02:00"},{"filepath":"b0e3659bf211801f","modifications":1,"aiLines":15.5,"totalLines":15.5,"lastModified":"2025-12-05T00:02:07+02:00"},{"filepath":"INLINE-COMMENTS.md","modifications":1,"aiLines":78,"totalLines":95,"lastModified":"2025-12-04T23:59:18+02:00"},{"filepath":"IMPLEMENTATION-SUMMARY.md","modifications":1,"aiLines":78,"totalLines":95,"lastModified":"2025-12-04T23:59:18+02:00"},{"filepath":"dist/index.js","modifications":1,"aiLines":57.63636363636363,"totalLines":57.36363636363637,"lastModified":"2025-12-04T23:44:04+02:00"},{"filepath":"19c18ffd94ba5046","modifications":1,"aiLines":24,"totalLines":47.333333333333336,"lastModified":"2025-12-04T23:37:27+02:00"},{"filepath":"d0ca3b06e428793e","modifications":1,"aiLines":24,"totalLines":47.333333333333336,"lastModified":"2025-12-04T23:37:27+02:00"},{"filepath":"amir.txt","modifications":1,"aiLines":5,"totalLines":5.5,"lastModified":"2025-12-04T20:06:51+02:00"},{"filepath":"435f67c15803c545","modifications":1,"aiLines":5,"totalLines":5.5,"lastModified":"2025-12-04T20:06:51+02:00"},{"filepath":"test_new.txt","modifications":1,"aiLines":4.5,"totalLines":5,"lastModified":"2025-12-04T17:28:22+02:00"},{"filepath":"681ea6b50943c1a9","modifications":1,"aiLines":12.5,"totalLines":12.5,"lastModified":"2025-12-04T16:55:15+02:00"},{"filepath":"9c5ded02620b9558","modifications":1,"aiLines":8.5,"totalLines":8.5,"lastModified":"2025-12-04T16:43:06+02:00"},{"filepath":".gitignore","modifications":1,"aiLines":0.5,"totalLines":572,"lastModified":"2025-12-04T16:01:26+02:00"}],
+      totalCommits: 38,
+      totalFiles: 52,
+      totalLines: 15376,
+      aiLines: 3934,
+      humanLines: 11442,
+      aiPercentage: 25.585327783558792
     };
     
     // Store chart instances
@@ -1343,8 +1343,8 @@
       }
       
       filtered.commits = filteredCommits;
-      
-      // Rebuild commitsByDate from filtered commits
+
+      // Rebuild commitsByDate from filtered commits using actual commit data
       const dateMap = new Map();
       for (const commit of filteredCommits) {
         const dateStr = commit.date.split('T')[0];
@@ -1358,37 +1358,29 @@
           });
         }
         const dateData = dateMap.get(dateStr);
-        
-        // Find the original commit data to get line counts
-        const originalDateData = rawData.commitsByDate.find(d => d.date === dateStr);
-        if (originalDateData) {
-          // Approximate: distribute lines evenly across commits in that date
-          const commitsInDate = rawData.commits.filter(c => c.date.split('T')[0] === dateStr).length;
-          const linesPerCommit = originalDateData.totalLines / commitsInDate;
-          const aiLinesPerCommit = originalDateData.aiLines / commitsInDate;
-          
-          dateData.count++;
-          dateData.totalLines += linesPerCommit;
-          dateData.aiLines += aiLinesPerCommit;
-        }
+
+        // Use actual commit line data instead of approximating from date averages
+        dateData.count++;
+        dateData.totalLines += commit.totalLines || 0;
+        dateData.aiLines += commit.aiLines || 0;
       }
-      
+
       // Calculate AI percentages for each date
       for (const dateData of dateMap.values()) {
-        dateData.aiPercent = dateData.totalLines > 0 
-          ? (dateData.aiLines / dateData.totalLines) * 100 
+        dateData.aiPercent = dateData.totalLines > 0
+          ? (dateData.aiLines / dateData.totalLines) * 100
           : 0;
       }
-      
+
       filtered.commitsByDate = Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date));
-      
-      // Recalculate totals from filtered date data
+
+      // Recalculate totals from filtered commits directly
       filtered.totalCommits = filtered.commits.length;
-      filtered.totalLines = Math.round(filtered.commitsByDate.reduce((sum, d) => sum + d.totalLines, 0));
-      filtered.aiLines = Math.round(filtered.commitsByDate.reduce((sum, d) => sum + d.aiLines, 0));
+      filtered.totalLines = filteredCommits.reduce((sum, c) => sum + (c.totalLines || 0), 0);
+      filtered.aiLines = filteredCommits.reduce((sum, c) => sum + (c.aiLines || 0), 0);
       filtered.humanLines = filtered.totalLines - filtered.aiLines;
       filtered.aiPercentage = filtered.totalLines > 0 ? (filtered.aiLines / filtered.totalLines) * 100 : 0;
-      
+
       // Recalculate file count from filtered commits
       const filesSet = new Set();
       for (const file of rawData.files) {
@@ -1396,47 +1388,37 @@
         filesSet.add(file.filepath);
       }
       filtered.totalFiles = filesSet.size;
-      
-      // Rebuild author statistics from filtered commits
+
+      // Rebuild author statistics from filtered commits using actual commit data
       const authorMap = new Map();
       for (const commit of filteredCommits) {
-        // Find the corresponding date data to get line counts
-        const dateStr = commit.date.split('T')[0];
-        const originalDateData = rawData.commitsByDate.find(d => d.date === dateStr);
-        
-        if (originalDateData) {
-          const commitsInDate = rawData.commits.filter(c => c.date.split('T')[0] === dateStr).length;
-          const linesPerCommit = originalDateData.totalLines / commitsInDate;
-          const aiLinesPerCommit = originalDateData.aiLines / commitsInDate;
-          
-          // Find matching author in rawData to get full author string with email
-          const fullAuthor = rawData.authors.find(a => a.author.startsWith(commit.author));
-          const authorKey = fullAuthor ? fullAuthor.author : commit.author;
-          
-          if (!authorMap.has(authorKey)) {
-            authorMap.set(authorKey, {
-              author: authorKey,
-              commits: 0,
-              totalLines: 0,
-              aiAssistedLines: 0,
-              aiUsagePercent: 0
-            });
-          }
-          
-          const authorData = authorMap.get(authorKey);
-          authorData.commits++;
-          authorData.totalLines += linesPerCommit;
-          authorData.aiAssistedLines += aiLinesPerCommit;
+        // Find matching author in rawData to get full author string with email
+        const fullAuthor = rawData.authors.find(a => a.author.startsWith(commit.author));
+        const authorKey = fullAuthor ? fullAuthor.author : commit.author;
+
+        if (!authorMap.has(authorKey)) {
+          authorMap.set(authorKey, {
+            author: authorKey,
+            commits: 0,
+            totalLines: 0,
+            aiAssistedLines: 0,
+            aiUsagePercent: 0
+          });
         }
+
+        const authorData = authorMap.get(authorKey);
+        authorData.commits++;
+        authorData.totalLines += commit.totalLines || 0;
+        authorData.aiAssistedLines += commit.aiLines || 0;
       }
-      
+
       // Calculate AI usage percentages for each author
       for (const authorData of authorMap.values()) {
-        authorData.aiUsagePercent = authorData.totalLines > 0 
-          ? (authorData.aiAssistedLines / authorData.totalLines) * 100 
+        authorData.aiUsagePercent = authorData.totalLines > 0
+          ? (authorData.aiAssistedLines / authorData.totalLines) * 100
           : 0;
       }
-      
+
       filtered.authors = Array.from(authorMap.values()).sort((a, b) => b.commits - a.commits);
       
       return filtered;

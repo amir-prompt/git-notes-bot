@@ -1,0 +1,43 @@
+name: PR Dashboard Link
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  add-dashboard-link:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment PR with dashboard link
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repoName = context.repo.repo;
+            const owner = context.repo.owner;
+            const dashboardUrl = `https://${owner}.github.io/${repoName}/ai-dashboard.html`;
+            
+            const body = `## 📊 AI Authorship Dashboard
+            
+            View the full AI contribution analytics dashboard:
+            👉 **[Open Dashboard](${dashboardUrl})**
+            
+            The dashboard includes:
+            - 📈 Timeline analytics
+            - 🧠 Model comparison
+            - 👥 Team statistics
+            - 📁 File insights
+            - 🎯 Acceptance rates
+            
+            _Dashboard is automatically updated on every push to main._`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+

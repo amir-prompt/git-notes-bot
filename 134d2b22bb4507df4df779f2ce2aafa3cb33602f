@@ -1,2 +1,58 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-07 08:56:12 UTC
+test.txt
+  5129a266849522be 11-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "134d2b22bb4507df4df779f2ce2aafa3cb33602f",
+  "prompts": {
+    "5129a266849522be": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "f546f2e8-9b3d-4524-b4f6-9a7a0f1ff018",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "Change the  text file make it shorter",
+          "timestamp": "2025-12-07T08:54:47.984Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll read the test.txt file first to see what's in it, then make it shorter.",
+          "timestamp": "2025-12-07T08:54:53.084Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "I'll shorten the test.txt file by condensing the content and removing redundant sections while keeping the essential information.",
+          "timestamp": "2025-12-07T08:54:58.667Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "write",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/test.txt"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Done! I've shortened the test.txt file from 96 lines to 23 lines by:\n\n- Reduced test cases from 15 to 3 core ones\n- Condensed test data into a more compact format\n- Removed verbose sections (performance benchmarks, integration matrix, security considerations, monitoring)\n- Kept only essential information: basic test cases, sample data, environment info, and best practices\n\nThe file now contains the same core information but in a much more concise format.",
+          "timestamp": "2025-12-07T08:55:06.000Z"
+        }
+      ],
+      "total_additions": 4,
+      "total_deletions": 77,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}

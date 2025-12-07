@@ -1,2 +1,7 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-07 09:08:02 UTC
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "fbe675e86a4acb80a96b0fdc3fb2578ca65e94c7",
+  "prompts": {}
+}

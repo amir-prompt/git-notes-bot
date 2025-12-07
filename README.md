@@ -10,6 +10,7 @@ A GitHub Action that reads [git notes](https://git-scm.com/docs/git-notes) from 
 - [Usage](#usage)
 - [Git AI / Cursor Integration](#git-ai--cursor-integration)
 - [Pushing Git Notes to Remote](#pushing-git-notes-to-remote)
+- [AI Authorship Dashboard](#ai-authorship-dashboard-new-)
 - [Example Output](#example-output)
 - [Troubleshooting](#troubleshooting)
 - [How It Works](#how-it-works)
@@ -27,7 +28,8 @@ Git notes are metadata attached to commits without modifying the commit itself. 
 
 ## Features
 
-- 📊 **Visual Dashboard** - Beautiful summary card with aggregate PR statistics
+- 📊 **Visual Dashboard** - Beautiful summary card with aggregate PR statistics  
+- 🌐 **Repository Dashboard** - Generate comprehensive HTML dashboards with analytics across all commits
 - 🎨 **Rich Visualizations** - Progress bars, pie charts, and sparklines for quick insights
 - 📅 **Timeline View** - Visual commit timeline for multi-commit PRs
 - 👥 **Authorship Graphics** - Side-by-side AI vs human contribution breakdown with icons
@@ -164,6 +166,87 @@ git config --add remote.origin.push refs/notes/commits
 # For custom note refs (e.g., refs/notes/ai)
 git push origin refs/notes/ai
 ```
+
+## AI Authorship Dashboard (NEW! 🌐)
+
+Generate beautiful, interactive HTML dashboards with **comprehensive analytics** across your entire repository!
+
+### ✨ Dashboard Features
+
+- **📈 Timeline Charts** - Visualize AI contribution trends over time
+- **🧠 Model Analytics** - Compare different AI models (GPT-4, Claude, etc.)
+- **👥 Team Statistics** - See how each developer uses AI assistance
+- **📁 File Insights** - Identify most AI-modified files
+- **🎯 Acceptance Rates** - Track AI code acceptance over time
+- **🔧 Tool Distribution** - Usage stats for Cursor, Git AI, etc.
+- **📊 Interactive Charts** - Powered by Chart.js
+- **📱 Responsive Design** - Works on all devices
+
+### 🚀 Quick Start
+
+**Generate locally:**
+```bash
+# Simple command
+npm run dashboard
+
+# Or with options
+npx ts-node generate-dashboard.ts --since "6 months ago"
+```
+
+**Deploy to GitHub Pages:**
+```bash
+# Automatic weekly updates + manual trigger
+# Just enable GitHub Pages in your repo settings!
+# The workflow is already configured in .github/workflows/
+```
+
+**View your dashboard:**
+```
+https://<username>.github.io/<repository>/ai-dashboard.html
+```
+
+### 📋 Dashboard CLI Options
+
+```bash
+npx ts-node generate-dashboard.ts [options]
+
+Options:
+  -o, --output <file>       Output HTML file (default: ai-dashboard.html)
+  -n, --notes-ref <ref>     Git notes ref (default: refs/notes/commits)
+  -s, --since <date>        Only commits since date (e.g., "6 months ago")
+  -r, --repo-name <name>    Repository name for display
+  -h, --help                Show help
+```
+
+### 🌟 Usage Examples
+
+```bash
+# Last 3 months only
+npm run dashboard -- --since "3 months ago"
+
+# Custom output and name
+./generate-dashboard.sh -o report.html -r "My Project"
+
+# Specific time range
+npx ts-node generate-dashboard.ts -s "2024-01-01" -o 2024-report.html
+```
+
+### 🤖 Automatic GitHub Pages Deployment
+
+The repository includes workflows for automatic dashboard generation:
+
+1. **Weekly Updates** - Runs every Sunday
+2. **Push to Main** - Updates on every main branch push
+3. **Manual Trigger** - Run anytime from Actions tab
+4. **PR Previews** - Generates preview dashboards for pull requests
+
+**Setup:**
+1. Go to Settings → Pages
+2. Set Source to "Deploy from a branch"
+3. Select `gh-pages` branch
+4. Done! Dashboard updates automatically
+
+> 📖 **[See full dashboard documentation →](DASHBOARD-GUIDE.md)**
 
 ## Example Output
 

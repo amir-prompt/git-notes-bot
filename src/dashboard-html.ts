@@ -4,6 +4,22 @@ import { DashboardData } from './dashboard';
  * Generates a beautiful HTML dashboard with charts
  */
 export function generateDashboardHTML(data: DashboardData, repoName?: string): string {
+  // Serialize data for client-side filtering
+  const allCommitsByDate = Array.from(data.commitsByDate.values())
+    .sort((a, b) => a.date.localeCompare(b.date));
+  
+  const allModels = Array.from(data.modelUsage.values())
+    .sort((a, b) => b.commits - a.commits);
+  
+  const allTools = Array.from(data.toolUsage.values())
+    .sort((a, b) => b.commits - a.commits);
+  
+  const allAuthors = Array.from(data.authorStats.values())
+    .sort((a, b) => b.commits - a.commits);
+  
+  const allFiles = Array.from(data.fileStats.values())
+    .sort((a, b) => b.modifications - a.modifications);
+  
   const topModels = Array.from(data.modelUsage.values())
     .sort((a, b) => b.commits - a.commits)
     .slice(0, 5);
@@ -13,8 +29,7 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
     .slice(0, 10);
   
   const topAuthors = Array.from(data.authorStats.values())
-    .sort((a, b) => b.commits - a.commits)
-    .slice(0, 10);
+    .sort((a, b) => b.commits - a.commits);
   
   // Prepare chart data
   const timelineLabels = Array.from(data.commitsByDate.values())
@@ -29,12 +44,23 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
     .sort((a, b) => a.date.localeCompare(b.date))
     .map(d => d.aiPercent.toFixed(1));
   
+  const aiLinesTimeline = Array.from(data.commitsByDate.values())
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map(d => d.aiLines);
+  
+  const humanLinesTimeline = Array.from(data.commitsByDate.values())
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map(d => d.totalLines - d.aiLines);
+  
   const modelLabels = topModels.map(m => m.model);
   const modelData = topModels.map(m => m.commits);
   const modelAcceptance = topModels.map(m => m.acceptanceRate.toFixed(1));
   
   const toolLabels = Array.from(data.toolUsage.values()).map(t => t.tool);
   const toolData = Array.from(data.toolUsage.values()).map(t => t.commits);
+  
+  // Get unique authors from recent commits (these have just the name, not email)
+  const authorLabels = [...new Set(data.recentCommits.map(c => c.author))].sort();
   
   return `<!DOCTYPE html>
 <html lang="en">
@@ -269,6 +295,100 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
       opacity: 1;
     }
     
+    .filters-container {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .filters-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .filter-label {
+      font-size: 0.9em;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    
+    .filter-select {
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      background: white;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+    
+    .filter-select:hover {
+      border-color: #667eea;
+    }
+    
+    .filter-select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .filter-button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
+      margin-top: auto;
+    }
+    
+    .filter-button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    
+    .filter-button:active {
+      transform: translateY(0);
+    }
+    
+    .active-filters {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.9em;
+      color: #666;
+    }
+    
+    .filter-tag {
+      display: inline-block;
+      padding: 5px 12px;
+      margin: 5px 5px 0 0;
+      background: #e8eaf6;
+      color: #667eea;
+      border-radius: 15px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
     @media (max-width: 768px) {
       h1 {
         font-size: 2em;
@@ -281,6 +401,10 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
       .chart-wrapper {
         height: 300px;
       }
+      
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -290,6 +414,56 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
       <h1>🤖 AI Authorship Dashboard</h1>
       <p class="subtitle">${repoName || 'Repository'} - AI Code Contribution Analytics</p>
     </header>
+    
+    <!-- Filters -->
+    <div class="filters-container">
+      <h2 class="filters-title">🔍 Filters</h2>
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label" for="timeFilter">Time Range</label>
+          <select id="timeFilter" class="filter-select">
+            <option value="all">All Time</option>
+            <option value="7">Last 7 Days</option>
+            <option value="30">Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+            <option value="180">Last 6 Months</option>
+            <option value="365">Last Year</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label" for="toolFilter">Tool</label>
+          <select id="toolFilter" class="filter-select">
+            <option value="all">All Tools</option>
+            ${toolLabels.map(tool => `<option value="${tool}">${tool}</option>`).join('')}
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label" for="modelFilter">AI Model</label>
+          <select id="modelFilter" class="filter-select">
+            <option value="all">All Models</option>
+            ${modelLabels.map(model => `<option value="${model}">${model}</option>`).join('')}
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label" for="authorFilter">Author</label>
+          <select id="authorFilter" class="filter-select">
+            <option value="all">All Authors</option>
+            ${authorLabels.map(author => `<option value="${author}">${author}</option>`).join('')}
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <button id="applyFilters" class="filter-button">Apply Filters</button>
+        </div>
+      </div>
+      <div id="activeFilters" class="active-filters" style="display: none;">
+        <strong>Active Filters:</strong>
+        <div id="filterTags"></div>
+      </div>
+    </div>
     
     <!-- Summary Stats -->
     <div class="stats-grid">
@@ -301,7 +475,7 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
             <span class="tooltip-text">Total number of commits in the repository history</span>
           </span>
         </div>
-        <div class="stat-value">${data.totalCommits}</div>
+        <div class="stat-value" id="statTotalCommits">${data.totalCommits}</div>
       </div>
       
       <div class="stat-card">
@@ -312,7 +486,7 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
             <span class="tooltip-text">Unique count of files that have been modified across all commits</span>
           </span>
         </div>
-        <div class="stat-value">${data.totalFiles}</div>
+        <div class="stat-value" id="statTotalFiles">${data.totalFiles}</div>
       </div>
       
       <div class="stat-card">
@@ -323,7 +497,7 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
             <span class="tooltip-text">Sum of all lines added and deleted across all commits (additions + deletions)</span>
           </span>
         </div>
-        <div class="stat-value">${data.totalLines.toLocaleString()}</div>
+        <div class="stat-value" id="statTotalLines">${data.totalLines.toLocaleString()}</div>
       </div>
       
       <div class="stat-card">
@@ -334,7 +508,7 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
             <span class="tooltip-text">Percentage of total lines that were contributed by AI (AI lines / Total lines × 100)</span>
           </span>
         </div>
-        <div class="stat-value">${data.aiPercentage.toFixed(1)}%</div>
+        <div class="stat-value" id="statAIPercentage">${data.aiPercentage.toFixed(1)}%</div>
       </div>
     </div>
     
@@ -389,11 +563,46 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
       </div>
     </div>
     
+    <div class="grid-2">
+      <div class="chart-container">
+        <h2 class="chart-title">
+          🤖 AI vs Human Contribution
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Overall distribution of lines contributed by AI versus human authors across all commits</span>
+          </span>
+        </h2>
+        <div class="chart-wrapper small">
+          <canvas id="aiHumanPieChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <h2 class="chart-title">
+          📊 Contribution Summary
+          <span class="tooltip-icon">ℹ️
+            <span class="tooltip-text">Quick overview of AI and human contribution metrics</span>
+          </span>
+        </h2>
+        <div style="padding: 20px;">
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 1.2em; color: #667eea; font-weight: bold;">AI Contribution</div>
+            <div style="font-size: 2.5em; font-weight: bold; color: #667eea;" id="summaryAILines">${data.aiLines.toLocaleString()}</div>
+            <div style="color: #666;" id="summaryAIPercent">lines (${data.aiPercentage.toFixed(1)}%)</div>
+          </div>
+          <div>
+            <div style="font-size: 1.2em; color: #48bb78; font-weight: bold;">Human Contribution</div>
+            <div style="font-size: 2.5em; font-weight: bold; color: #48bb78;" id="summaryHumanLines">${data.humanLines.toLocaleString()}</div>
+            <div style="color: #666;" id="summaryHumanPercent">lines (${(100 - data.aiPercentage).toFixed(1)}%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div class="chart-container">
       <h2 class="chart-title">
-        👥 AI vs Human Contribution
+        👥 AI vs Human Contribution Over Time
         <span class="tooltip-icon">ℹ️
-          <span class="tooltip-text">Comparison of total lines contributed by AI versus human authors (based on AI metadata in git notes)</span>
+          <span class="tooltip-text">Timeline showing lines contributed by AI versus human authors per day (based on AI metadata in git notes)</span>
         </span>
       </h2>
       <div class="chart-wrapper small">
@@ -487,7 +696,7 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
             <th>AI Usage</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="authorStatsTable">
           ${topAuthors.map(a => `
             <tr>
               <td><strong>${a.author}</strong></td>
@@ -525,7 +734,7 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
             <th>Model</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="recentCommitsTable">
           ${data.recentCommits.map(c => `
             <tr>
               <td><code>${c.shortSha}</code></td>
@@ -691,13 +900,23 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
     
     // Contribution Chart
     new Chart(document.getElementById('contributionChart'), {
-      type: 'bar',
+      type: 'line',
       data: {
-        labels: ['AI Lines', 'Human Lines'],
+        labels: ${JSON.stringify(timelineLabels)},
         datasets: [{
-          label: 'Lines of Code',
-          data: [${data.aiLines}, ${data.humanLines}],
-          backgroundColor: [chartColors.primary, chartColors.success]
+          label: 'AI Lines',
+          data: ${JSON.stringify(aiLinesTimeline)},
+          borderColor: chartColors.primary,
+          backgroundColor: chartColors.primary + '20',
+          tension: 0.4,
+          fill: false
+        }, {
+          label: 'Human Lines',
+          data: ${JSON.stringify(humanLinesTimeline)},
+          borderColor: chartColors.success,
+          backgroundColor: chartColors.success + '20',
+          tension: 0.4,
+          fill: false
         }]
       },
       options: {
@@ -705,7 +924,8 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: false
+            display: true,
+            position: 'top'
           }
         },
         scales: {
@@ -714,6 +934,352 @@ export function generateDashboardHTML(data: DashboardData, repoName?: string): s
           }
         }
       }
+    });
+    
+    // AI vs Human Pie Chart
+    new Chart(document.getElementById('aiHumanPieChart'), {
+      type: 'pie',
+      data: {
+        labels: ['AI Contribution', 'Human Contribution'],
+        datasets: [{
+          data: [${data.aiLines}, ${data.humanLines}],
+          backgroundColor: [
+            chartColors.primary,
+            chartColors.success
+          ],
+          borderWidth: 2,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const total = ${data.totalLines};
+                const percentage = ((value / total) * 100).toFixed(1);
+                return label + ': ' + value.toLocaleString() + ' lines (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    // Store raw data for filtering
+    const rawData = {
+      commits: ${JSON.stringify(data.recentCommits)},
+      commitsByDate: ${JSON.stringify(allCommitsByDate)},
+      models: ${JSON.stringify(allModels)},
+      tools: ${JSON.stringify(allTools)},
+      authors: ${JSON.stringify(allAuthors)},
+      files: ${JSON.stringify(allFiles)},
+      totalCommits: ${data.totalCommits},
+      totalFiles: ${data.totalFiles},
+      totalLines: ${data.totalLines},
+      aiLines: ${data.aiLines},
+      humanLines: ${data.humanLines},
+      aiPercentage: ${data.aiPercentage}
+    };
+    
+    // Store chart instances
+    let charts = {
+      timeline: null,
+      acceptance: null,
+      model: null,
+      tool: null,
+      contribution: null,
+      aiHumanPie: null
+    };
+    
+    // Initialize charts (already created above)
+    charts.timeline = Chart.getChart('timelineChart');
+    charts.acceptance = Chart.getChart('acceptanceChart');
+    charts.model = Chart.getChart('modelChart');
+    charts.tool = Chart.getChart('toolChart');
+    charts.contribution = Chart.getChart('contributionChart');
+    charts.aiHumanPie = Chart.getChart('aiHumanPieChart');
+    
+    // Filter data function
+    function filterData(timeFilter, toolFilter, modelFilter, authorFilter) {
+      let filtered = { ...rawData };
+      let filteredCommits = [...rawData.commits];
+      
+      // Apply time filter
+      if (timeFilter !== 'all') {
+        const days = parseInt(timeFilter);
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - days);
+        const cutoffStr = cutoffDate.toISOString().split('T')[0];
+        
+        filteredCommits = filteredCommits.filter(c => c.date.split('T')[0] >= cutoffStr);
+      }
+      
+      // Apply tool filter
+      if (toolFilter !== 'all') {
+        filteredCommits = filteredCommits.filter(c => c.tool === toolFilter);
+        filtered.tools = rawData.tools.filter(t => t.tool === toolFilter);
+      }
+      
+      // Apply model filter
+      if (modelFilter !== 'all') {
+        filteredCommits = filteredCommits.filter(c => c.model === modelFilter);
+        filtered.models = rawData.models.filter(m => m.model === modelFilter);
+      }
+      
+      // Apply author filter
+      if (authorFilter !== 'all') {
+        filteredCommits = filteredCommits.filter(c => c.author === authorFilter);
+      }
+      
+      filtered.commits = filteredCommits;
+      
+      // Rebuild commitsByDate from filtered commits
+      const dateMap = new Map();
+      for (const commit of filteredCommits) {
+        const dateStr = commit.date.split('T')[0];
+        if (!dateMap.has(dateStr)) {
+          dateMap.set(dateStr, {
+            date: dateStr,
+            count: 0,
+            aiLines: 0,
+            totalLines: 0,
+            aiPercent: 0
+          });
+        }
+        const dateData = dateMap.get(dateStr);
+        
+        // Find the original commit data to get line counts
+        const originalDateData = rawData.commitsByDate.find(d => d.date === dateStr);
+        if (originalDateData) {
+          // Approximate: distribute lines evenly across commits in that date
+          const commitsInDate = rawData.commits.filter(c => c.date.split('T')[0] === dateStr).length;
+          const linesPerCommit = originalDateData.totalLines / commitsInDate;
+          const aiLinesPerCommit = originalDateData.aiLines / commitsInDate;
+          
+          dateData.count++;
+          dateData.totalLines += linesPerCommit;
+          dateData.aiLines += aiLinesPerCommit;
+        }
+      }
+      
+      // Calculate AI percentages for each date
+      for (const dateData of dateMap.values()) {
+        dateData.aiPercent = dateData.totalLines > 0 
+          ? (dateData.aiLines / dateData.totalLines) * 100 
+          : 0;
+      }
+      
+      filtered.commitsByDate = Array.from(dateMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+      
+      // Recalculate totals from filtered date data
+      filtered.totalCommits = filtered.commits.length;
+      filtered.totalLines = Math.round(filtered.commitsByDate.reduce((sum, d) => sum + d.totalLines, 0));
+      filtered.aiLines = Math.round(filtered.commitsByDate.reduce((sum, d) => sum + d.aiLines, 0));
+      filtered.humanLines = filtered.totalLines - filtered.aiLines;
+      filtered.aiPercentage = filtered.totalLines > 0 ? (filtered.aiLines / filtered.totalLines) * 100 : 0;
+      
+      // Recalculate file count from filtered commits
+      const filesSet = new Set();
+      for (const file of rawData.files) {
+        // Include files that appear in our filtered commits
+        filesSet.add(file.filepath);
+      }
+      filtered.totalFiles = filesSet.size;
+      
+      // Rebuild author statistics from filtered commits
+      const authorMap = new Map();
+      for (const commit of filteredCommits) {
+        // Find the corresponding date data to get line counts
+        const dateStr = commit.date.split('T')[0];
+        const originalDateData = rawData.commitsByDate.find(d => d.date === dateStr);
+        
+        if (originalDateData) {
+          const commitsInDate = rawData.commits.filter(c => c.date.split('T')[0] === dateStr).length;
+          const linesPerCommit = originalDateData.totalLines / commitsInDate;
+          const aiLinesPerCommit = originalDateData.aiLines / commitsInDate;
+          
+          // Find matching author in rawData to get full author string with email
+          const fullAuthor = rawData.authors.find(a => a.author.startsWith(commit.author));
+          const authorKey = fullAuthor ? fullAuthor.author : commit.author;
+          
+          if (!authorMap.has(authorKey)) {
+            authorMap.set(authorKey, {
+              author: authorKey,
+              commits: 0,
+              totalLines: 0,
+              aiAssistedLines: 0,
+              aiUsagePercent: 0
+            });
+          }
+          
+          const authorData = authorMap.get(authorKey);
+          authorData.commits++;
+          authorData.totalLines += linesPerCommit;
+          authorData.aiAssistedLines += aiLinesPerCommit;
+        }
+      }
+      
+      // Calculate AI usage percentages for each author
+      for (const authorData of authorMap.values()) {
+        authorData.aiUsagePercent = authorData.totalLines > 0 
+          ? (authorData.aiAssistedLines / authorData.totalLines) * 100 
+          : 0;
+      }
+      
+      filtered.authors = Array.from(authorMap.values()).sort((a, b) => b.commits - a.commits);
+      
+      return filtered;
+    }
+    
+    // Update dashboard function
+    function updateDashboard(filtered) {
+      // Update stats
+      document.getElementById('statTotalCommits').textContent = filtered.totalCommits;
+      document.getElementById('statTotalFiles').textContent = filtered.totalFiles;
+      document.getElementById('statTotalLines').textContent = filtered.totalLines.toLocaleString();
+      document.getElementById('statAIPercentage').textContent = filtered.aiPercentage.toFixed(1) + '%';
+      
+      // Update summary cards
+      document.getElementById('summaryAILines').textContent = filtered.aiLines.toLocaleString();
+      document.getElementById('summaryAIPercent').textContent = 'lines (' + filtered.aiPercentage.toFixed(1) + '%)';
+      document.getElementById('summaryHumanLines').textContent = filtered.humanLines.toLocaleString();
+      document.getElementById('summaryHumanPercent').textContent = 'lines (' + (100 - filtered.aiPercentage).toFixed(1) + '%)';
+      
+      // Update timeline chart
+      const timelineLabels = filtered.commitsByDate.map(d => d.date);
+      const timelineData = filtered.commitsByDate.map(d => d.count);
+      charts.timeline.data.labels = timelineLabels;
+      charts.timeline.data.datasets[0].data = timelineData;
+      charts.timeline.update();
+      
+      // Update acceptance rate chart
+      const aiPercentData = filtered.commitsByDate.map(d => d.aiPercent.toFixed(1));
+      charts.acceptance.data.labels = timelineLabels;
+      charts.acceptance.data.datasets[0].data = aiPercentData;
+      charts.acceptance.update();
+      
+      // Update contribution chart
+      const aiLinesData = filtered.commitsByDate.map(d => d.aiLines);
+      const humanLinesData = filtered.commitsByDate.map(d => d.totalLines - d.aiLines);
+      charts.contribution.data.labels = timelineLabels;
+      charts.contribution.data.datasets[0].data = aiLinesData;
+      charts.contribution.data.datasets[1].data = humanLinesData;
+      charts.contribution.update();
+      
+      // Update model chart
+      const topModels = filtered.models.sort((a, b) => b.commits - a.commits).slice(0, 5);
+      charts.model.data.labels = topModels.map(m => m.model);
+      charts.model.data.datasets[0].data = topModels.map(m => m.commits);
+      charts.model.update();
+      
+      // Update tool chart
+      charts.tool.data.labels = filtered.tools.map(t => t.tool);
+      charts.tool.data.datasets[0].data = filtered.tools.map(t => t.commits);
+      charts.tool.update();
+      
+      // Update AI vs Human pie chart
+      charts.aiHumanPie.data.datasets[0].data = [filtered.aiLines, filtered.humanLines];
+      charts.aiHumanPie.update();
+      
+      // Update Recent AI-Assisted Commits table
+      const recentCommitsTable = document.getElementById('recentCommitsTable');
+      if (recentCommitsTable) {
+        recentCommitsTable.innerHTML = filtered.commits.map(c => {
+          const badgeClass = c.aiPercent >= 80 ? 'badge-success' : c.aiPercent >= 50 ? 'badge-warning' : 'badge-info';
+          const messageShort = c.message.substring(0, 50) + (c.message.length > 50 ? '...' : '');
+          return \`
+            <tr>
+              <td><code>\${c.shortSha}</code></td>
+              <td>\${c.author}</td>
+              <td title="\${c.message}">\${messageShort}</td>
+              <td>
+                <span class="badge \${badgeClass}">
+                  \${c.aiPercent.toFixed(0)}%
+                </span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: \${c.aiPercent}%"></div>
+                </div>
+              </td>
+              <td><small>\${c.model || 'N/A'}</small></td>
+            </tr>
+          \`;
+        }).join('');
+      }
+      
+      // Update Author Statistics table
+      const authorStatsTable = document.getElementById('authorStatsTable');
+      console.log('Updating author stats:', filtered.authors);
+      if (authorStatsTable) {
+        if (filtered.authors && filtered.authors.length > 0) {
+          authorStatsTable.innerHTML = filtered.authors.map(a => {
+            const badgeClass = a.aiUsagePercent >= 70 ? 'badge-success' : a.aiUsagePercent >= 40 ? 'badge-warning' : 'badge-info';
+            return \`
+              <tr>
+                <td><strong>\${a.author}</strong></td>
+                <td>\${a.commits}</td>
+                <td>\${Math.round(a.totalLines).toLocaleString()}</td>
+                <td>
+                  <span class="badge \${badgeClass}">
+                    \${a.aiUsagePercent.toFixed(1)}%
+                  </span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: \${a.aiUsagePercent}%"></div>
+                  </div>
+                </td>
+              </tr>
+            \`;
+          }).join('');
+        } else {
+          authorStatsTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No authors found for selected filters</td></tr>';
+        }
+      }
+    }
+    
+    // Filter button handler
+    const applyFiltersBtn = document.getElementById('applyFilters');
+    const activeFiltersDiv = document.getElementById('activeFilters');
+    const filterTagsDiv = document.getElementById('filterTags');
+    
+    applyFiltersBtn.addEventListener('click', function() {
+      const timeFilter = document.getElementById('timeFilter').value;
+      const toolFilter = document.getElementById('toolFilter').value;
+      const modelFilter = document.getElementById('modelFilter').value;
+      const authorFilter = document.getElementById('authorFilter').value;
+      
+      const filterTags = [];
+      if (timeFilter !== 'all') {
+        filterTags.push('Time: Last ' + timeFilter + ' days');
+      }
+      if (toolFilter !== 'all') {
+        filterTags.push('Tool: ' + toolFilter);
+      }
+      if (modelFilter !== 'all') {
+        filterTags.push('Model: ' + modelFilter);
+      }
+      if (authorFilter !== 'all') {
+        filterTags.push('Author: ' + authorFilter);
+      }
+      
+      if (filterTags.length > 0) {
+        filterTagsDiv.innerHTML = filterTags.map(tag => 
+          '<span class="filter-tag">' + tag + '</span>'
+        ).join('');
+        activeFiltersDiv.style.display = 'block';
+      } else {
+        activeFiltersDiv.style.display = 'none';
+      }
+      
+      // Apply filters and update dashboard
+      const filtered = filterData(timeFilter, toolFilter, modelFilter, authorFilter);
+      updateDashboard(filtered);
     });
   </script>
 </body>

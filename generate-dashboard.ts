@@ -21,7 +21,7 @@ function parseArgs(): Options {
   const args = process.argv.slice(2);
   const options: Options = {
     output: 'ai-dashboard.html',
-    notesRef: 'refs/notes/commits'
+    notesRef: 'refs/notes/ai'
   };
   
   for (let i = 0; i < args.length; i++) {

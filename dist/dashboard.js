@@ -170,10 +170,9 @@ async function aggregateDashboardData(notesRef = 'refs/notes/commits', since) {
         if (!parsed)
             continue;
         const commitDate = commit.date.split('T')[0];
-        // Total work includes both additions and deletions
-        const totalLines = parsed.totalAdditions + parsed.totalDeletions;
-        // AI work includes accepted additions plus all deletions (when AI is involved)
-        const aiLines = parsed.acceptedLines + parsed.totalDeletions;
+        // Measure code written: only count additions (lines of code added)
+        const totalLines = parsed.totalAdditions;
+        const aiLines = parsed.acceptedLines;
         const aiPercent = totalLines > 0 ? (aiLines / totalLines) * 100 : 0;
         // Track files - divide stats evenly among files in the commit
         const fileCount = parsed.files.length || 1;

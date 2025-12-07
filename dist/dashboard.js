@@ -97,7 +97,8 @@ function parseAINote(note) {
             const line = lines[i].trim();
             if (line === '---' || line.startsWith('{'))
                 break;
-            if (line && !line.match(/^[a-f0-9\s\-]+$/)) {
+            // Skip empty lines and lines that look like commit hashes (16 hex chars)
+            if (line && !line.match(/^[a-f0-9]{16}$/)) {
                 filePaths.push(line.split(/\s+/)[0]);
             }
         }
@@ -169,25 +170,30 @@ async function aggregateDashboardData(notesRef = 'refs/notes/commits', since) {
         if (!parsed)
             continue;
         const commitDate = commit.date.split('T')[0];
-        const totalLines = parsed.totalAdditions;
-        const aiLines = parsed.acceptedLines;
+        // Total work includes both additions and deletions
+        const totalLines = parsed.totalAdditions + parsed.totalDeletions;
+        // AI work includes accepted additions plus all deletions (when AI is involved)
+        const aiLines = parsed.acceptedLines + parsed.totalDeletions;
         const aiPercent = totalLines > 0 ? (aiLines / totalLines) * 100 : 0;
-        // Track files
+        // Track files - divide stats evenly among files in the commit
+        const fileCount = parsed.files.length || 1;
+        const linesPerFile = totalLines / fileCount;
+        const aiLinesPerFile = aiLines / fileCount;
         for (const file of parsed.files) {
             fileSet.add(file);
             const existing = data.fileStats.get(file);
             if (existing) {
                 existing.modifications++;
-                existing.aiLines += aiLines;
-                existing.totalLines += totalLines;
+                existing.aiLines += aiLinesPerFile;
+                existing.totalLines += linesPerFile;
                 existing.lastModified = commit.date;
             }
             else {
                 data.fileStats.set(file, {
                     filepath: file,
                     modifications: 1,
-                    aiLines,
-                    totalLines,
+                    aiLines: aiLinesPerFile,
+                    totalLines: linesPerFile,
                     lastModified: commit.date
                 });
             }

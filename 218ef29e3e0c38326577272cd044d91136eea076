@@ -1,2 +1,145 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-07 09:03:30 UTC
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "218ef29e3e0c38326577272cd044d91136eea076",
+  "prompts": {
+    "d8158199568c526a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "756373ed-0213-490f-8048-90facf33dd4d",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "when the dashbaord is updated?",
+          "timestamp": "2025-12-07T08:58:20.339Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I'll check the documentation and code to understand when the dashboard gets updated.",
+          "timestamp": "2025-12-07T08:58:25.416Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/DASHBOARD-QUICKSTART.md"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/DASHBOARD-GUIDE.md"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/generate-dashboard.sh"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "glob_file_search",
+          "input": {
+            "glob_pattern": "**/*dashboard*.yml"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "list_dir",
+          "input": {
+            "target_directory": "/Users/amir.barshavit/dev/prompt/git-notes-bot/.github"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/.github/workflows/generate-dashboard.yml"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Based on the workflow configuration, the **dashboard is automatically updated** in three scenarios:\n\n## When the Dashboard Updates:\n\n1. **📅 Weekly Schedule** - Every Sunday at midnight UTC (via cron job)\n\n2. **🚀 On Push to Main** - Automatically whenever code is pushed to the `main` branch\n\n3. **🔧 Manual Trigger** - You can manually trigger it anytime from GitHub Actions → \"Generate AI Dashboard\" → \"Run workflow\"\n\nThe workflow:\n- Fetches all git notes\n- Generates the dashboard HTML\n- Deploys it to GitHub Pages (`gh-pages` branch)\n\nYou can also **generate it locally** anytime by running:\n```bash\nnpm run dashboard\n```\n\nThis creates `ai-dashboard.html` locally without waiting for the automated updates.",
+          "timestamp": "2025-12-07T08:58:44.632Z"
+        },
+        {
+          "type": "user",
+          "text": "im not sure that  Automatically whenever code is pushed to the main branch worikng",
+          "timestamp": "2025-12-07T08:59:08.394Z"
+        },
+        {
+          "type": "assistant",
+          "text": "Let me check the workflow configuration and help you verify if it's working correctly.",
+          "timestamp": "2025-12-07T08:59:15.301Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "limit": 20,
+            "offset": 1,
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/.github/workflows/generate-dashboard.yml"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git branch -a",
+            "explanation": "Check what branches exist to see if there's a main branch",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "You're right to question this! Looking at your git status, you're currently on the `test_commit` branch, and the workflow is configured to only trigger on pushes to the `main` branch:\n\n```5:5:.github/workflows/generate-dashboard.yml\n    branches: [main]\n```\n\nSo the dashboard will **only update automatically when you push to the `main` branch**, not other branches like `test_commit`.\n\n**To fix this**, you have a few options:\n\n1. **Add your current branch** to the trigger:\n   - Update to `branches: [main, test_commit]`\n\n2. **Trigger on all branches**:\n   - Remove the `branches:` filter entirely\n\n3. **Trigger on multiple branches with a pattern**:\n   - Use `branches: [main, test*, develop]`\n\nWould you like me to update the workflow to trigger on `test_commit` as well, or would you prefer a different configuration?",
+          "timestamp": "2025-12-07T08:59:16.850Z"
+        },
+        {
+          "type": "user",
+          "text": "I alredy  merged it, and not see the commit",
+          "timestamp": "2025-12-07T09:00:16.419Z"
+        },
+        {
+          "type": "assistant",
+          "text": "Let me check the recent activity on the main branch and see if the workflow ran:",
+          "timestamp": "2025-12-07T09:00:21.747Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log origin/main --oneline -10",
+            "explanation": "Check recent commits on the main branch to see if the merge happened",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log origin/gh-pages --oneline -5",
+            "explanation": "Check the gh-pages branch to see if the dashboard was deployed",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Good news! I can see the workflow **did run**! \n\nLooking at the logs:\n- ✅ Your merge to main happened: `855aae1 Merge pull request #10 from amir-prompt/test_commit`\n- ✅ The gh-pages branch was updated: `679c9ba Update dashboard with refs/notes/ai data`\n\nThe dashboard should be available at:\n```\nhttps://amir-prompt.github.io/git-notes-bot/ai-dashboard.html\n```\n\n**If you're not seeing the dashboard**, try:\n\n1. **Wait a few minutes** - GitHub Pages can take 1-5 minutes to deploy after the workflow completes\n\n2. **Check if GitHub Pages is enabled**:\n   - Go to your repo Settings → Pages\n   - Make sure Source is set to \"Deploy from a branch\" \n   - Branch should be `gh-pages` and folder `/ (root)`\n\n3. **Check the workflow run** on GitHub:\n   - Go to Actions tab in your repo\n   - Look for \"Generate AI Dashboard\" workflow\n   - Click on the latest run to see if there were any errors\n\n4. **Hard refresh** your browser (Ctrl+Shift+R or Cmd+Shift+R) to clear cache\n\nWould you like me to help you check the GitHub Actions logs or verify the Pages configuration?",
+          "timestamp": "2025-12-07T09:00:29.777Z"
+        }
+      ],
+      "total_additions": 0,
+      "total_deletions": 2,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  }
+}

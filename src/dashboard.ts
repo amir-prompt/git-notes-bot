@@ -164,6 +164,35 @@ async function getAllCommitsWithNotes(notesRef: string, since?: string): Promise
 }
 
 /**
+ * Gets the actual additions/deletions for a commit from git diff
+ */
+async function getCommitStats(sha: string): Promise<{ additions: number; deletions: number }> {
+  let output = '';
+  try {
+    await exec.exec('git', ['show', '--shortstat', '--format=', sha], {
+      listeners: {
+        stdout: (data: Buffer) => {
+          output += data.toString();
+        }
+      },
+      ignoreReturnCode: true
+    });
+    
+    // Parse output like: " 1 file changed, 67 insertions(+)"
+    const match = output.match(/(\d+) insertion[s]?\(\+\)[,]?\s*(?:(\d+) deletion[s]?\(-\))?/);
+    if (match) {
+      return {
+        additions: parseInt(match[1]) || 0,
+        deletions: parseInt(match[2]) || 0
+      };
+    }
+  } catch {
+    // Ignore errors
+  }
+  return { additions: 0, deletions: 0 };
+}
+
+/**
  * Parses an AI authorship note and extracts metrics
  */
 function parseAINote(note: string): {
@@ -264,8 +293,19 @@ export async function aggregateDashboardData(
     if (!parsed) continue;
     
     const commitDate = commit.date.split('T')[0];
+    
+    // If the note has no additions recorded (manual commit), get real stats from git
+    let totalLines = parsed.totalAdditions;
+    let totalDeletions = parsed.totalDeletions;
+    
+    if (totalLines === 0 && !parsed.model) {
+      // Manual commit - get actual stats from git
+      const stats = await getCommitStats(commit.sha);
+      totalLines = stats.additions;
+      totalDeletions = stats.deletions;
+    }
+    
     // Measure code written: only count additions (lines of code added)
-    const totalLines = parsed.totalAdditions;
     const aiLines = parsed.acceptedLines;
     const aiPercent = totalLines > 0 ? (aiLines / totalLines) * 100 : 0;
     

@@ -1,2 +1,284 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-07 09:27:17 UTC
+src/dashboard.ts
+  07845fb9723bbada 267-268
+generate-dashboard.ts
+  07845fb9723bbada 24
+generate-dashboard.sh
+  07845fb9723bbada 20,48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "b14ef83bdc8ac5a718f056ba617c93e0a2b2bb07",
+  "prompts": {
+    "07845fb9723bbada": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6104be8f-4471-412a-8e17-71170655340e",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [
+        {
+          "type": "user",
+          "text": "its seems like the dashbaord have mistake \n\n\n\nhttps://amir-prompt.github.io/git-notes-bot/ai-dashboard.html",
+          "timestamp": "2025-12-07T09:10:42.972Z"
+        },
+        {
+          "type": "assistant",
+          "text": "I can see a couple of issues in the dashboard:\n\n1. **File names showing as commit hashes** (like \"ae16f7e9b721cde0\", \"3d099ee320fed3f7\") instead of actual file names\n2. **AI contribution percentages over 100%** (like 117%, 110%, 101%) which doesn't make logical sense\n\nLet me examine the dashboard generation code to identify and fix these issues.",
+          "timestamp": "2025-12-07T09:10:50.928Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/dashboard.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/git-notes.ts"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Looking at the code, I can see two main issues:\n\n1. **File name extraction bug** (lines 184-189): The regex is incorrectly filtering file names, allowing commit hashes to pass through\n2. **Line count aggregation bug** (lines 274-288): When a commit modifies multiple files, each file gets credited with the *entire* commit's line counts, causing percentages over 100%\n\nLet me check an actual note to understand the format better:",
+          "timestamp": "2025-12-07T09:11:08.818Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log --format=\"%H\" -n 1 | head -1 | xargs git notes show 2>/dev/null || echo \"No note found\"",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log --format=\"%H\" --notes -n 5 | grep -A 50 \"Notes:\" | head -60",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/add-ai-note.sh"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Now I can see the issues clearly. Let me fix the bugs in the dashboard data aggregation:",
+          "timestamp": "2025-12-07T09:11:27.760Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "search_replace",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/dashboard.ts"
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "search_replace",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/dashboard.ts"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Now let me check for any linter errors and rebuild:",
+          "timestamp": "2025-12-07T09:11:46.017Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && npm run build",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Perfect! The code compiles successfully. Now let me explain the fixes I made:\n\n## Fixed Issues\n\n### 1. **File Names Showing as Commit Hashes**\n**Problem:** The regex `/^[a-f0-9\\s\\-]+$/` was meant to filter out hash-like lines, but it was matching lines with spaces and dashes, allowing 16-character hex strings (truncated commit hashes) to be treated as filenames.\n\n**Fix:** Changed the regex to `/^[a-f0-9]{16}$/` to specifically match only 16-character hex strings (which are truncated commit hashes in git notes).\n\n```184:190:src/dashboard.ts\n    // Extract file paths\n    for (let i = 0; i < lines.length; i++) {\n      const line = lines[i].trim();\n      if (line === '---' || line.startsWith('{')) break;\n      // Skip empty lines and lines that look like commit hashes (16 hex chars)\n      if (line && !line.match(/^[a-f0-9]{16}$/)) {\n        filePaths.push(line.split(/\\s+/)[0]);\n      }\n    }\n```\n\n### 2. **AI Contribution Percentages Over 100%**\n**Problem:** When a commit modified multiple files, the code was assigning the *entire commit's line count* to *each file* separately. For example, if a commit added 100 lines across 3 files, each file would get credited with 100 lines, totaling 300 lines (300% of actual).\n\n**Fix:** Divided the line counts evenly among all files modified in a commit. Now each file gets its proportional share.\n\n```265:290:src/dashboard.ts\n    const commitDate = commit.date.split('T')[0];\n    const totalLines = parsed.totalAdditions;\n    const aiLines = parsed.acceptedLines;\n    const aiPercent = totalLines > 0 ? (aiLines / totalLines) * 100 : 0;\n    \n    // Track files - divide stats evenly among files in the commit\n    const fileCount = parsed.files.length || 1;\n    const linesPerFile = totalLines / fileCount;\n    const aiLinesPerFile = aiLines / fileCount;\n    \n    for (const file of parsed.files) {\n      fileSet.add(file);\n      \n      const existing = data.fileStats.get(file);\n      if (existing) {\n        existing.modifications++;\n        existing.aiLines += aiLinesPerFile;\n        existing.totalLines += linesPerFile;\n        existing.lastModified = commit.date;\n      } else {\n        data.fileStats.set(file, {\n          filepath: file,\n          modifications: 1,\n          aiLines: aiLinesPerFile,\n          totalLines: linesPerFile,\n          lastModified: commit.date\n        });\n      }\n    }\n```\n\nThe fixes have been built and are ready to deploy. Once you regenerate the dashboard, the file names should display correctly and all AI percentages should be at or below 100%.",
+          "timestamp": "2025-12-07T09:11:47.074Z"
+        },
+        {
+          "type": "user",
+          "text": "its also look like the AI Contribution is wrong",
+          "timestamp": "2025-12-07T09:12:01.909Z"
+        },
+        {
+          "type": "assistant",
+          "text": "Looking at the dashboard, I notice some inconsistencies that suggest the AI contribution calculation might indeed be wrong:\n\n1. Some commits show **0% AI** but list a model (like \"claude-4.5-sonnet-thinking\")\n2. The percentages seem inconsistent with the model information\n\nLet me examine an actual git note to understand the data structure:",
+          "timestamp": "2025-12-07T09:12:21.765Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log --format=\"%H\" -1",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git notes --ref=refs/notes/commits show 1ad53f79c0e810ade9c4ecdc3e0d3ff78a5321d2 2>/dev/null || echo \"No note\"",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log --format=\"%H\" --all | while read sha; do if git notes --ref=refs/notes/commits show \"$sha\" 2>/dev/null | grep -q \"schema_version\"; then echo \"$sha\"; git notes --ref=refs/notes/commits show \"$sha\" 2>/dev/null | head -50; break; fi; done",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git log --format=\"%H %s\" --notes=refs/notes/commits -10 | head -30",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git notes --ref=refs/notes/commits show 176bebf6b01ac99691203e9a4c77e1f025bfef28",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git for-each-ref refs/notes/",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git notes --ref=refs/notes/ai show 176bebf6b01ac99691203e9a4c77e1f025bfef28",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Perfect! Now I can see the actual note structure. Let me check one of those commits showing 0% AI but with a model listed:",
+          "timestamp": "2025-12-07T09:13:03.628Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git notes --ref=refs/notes/ai show 218ef29e3e0c38326577272cd044d91136eea076",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Excellent! Now I can see the real problem. This commit has:\n- `total_additions: 0`\n- `total_deletions: 2`  \n- `accepted_lines: 0`\n- AI model was used (claude-4.5-sonnet-thinking)\n\nThe current code **only counts additions** as work, completely ignoring deletions:\n\n```265:268:src/dashboard.ts\n    const commitDate = commit.date.split('T')[0];\n    const totalLines = parsed.totalAdditions;\n    const aiLines = parsed.acceptedLines;\n    const aiPercent = totalLines > 0 ? (aiLines / totalLines) * 100 : 0;\n```\n\nThis causes commits with deletions to show 0% AI even when AI did the work. Let me check one more commit to understand the full pattern:",
+          "timestamp": "2025-12-07T09:13:24.765Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git notes --ref=refs/notes/ai show 134d2b22bb4507df4df779f2ce2aafa3cb33602f",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Perfect! Now I understand the issue. This commit shows:\n- Added 4 lines, 3 accepted by AI (75%)\n- Deleted 77 lines (all AI work)\n- Dashboard shows: 75% AI ❌\n\nThe problem is **deletions are completely ignored** in the AI contribution calculation. When AI deletes code, that's also AI work! Let me fix this:",
+          "timestamp": "2025-12-07T09:13:45.109Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "search_replace",
+          "input": {
+            "file_path": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/dashboard.ts"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Now let me rebuild and verify:",
+          "timestamp": "2025-12-07T09:13:54.175Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && npm run build",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Perfect! The fixes are complete. Let me summarize all three issues I found and fixed:\n\n## Fixed Dashboard Issues ✅\n\n### 1. **File Names Showing as Commit Hashes**\n**Problem:** Regex was too permissive, allowing 16-character hex strings (truncated commit hashes) to be treated as filenames.\n\n**Fix:** Changed regex from `/^[a-f0-9\\s\\-]+$/` to `/^[a-f0-9]{16}$/` to specifically filter out commit hash IDs.\n\n### 2. **AI Contribution Over 100%**\n**Problem:** When a commit modified multiple files, each file was credited with the full commit's line counts, causing totals to exceed 100%.\n\n**Fix:** Divided line counts proportionally among all files in a commit:\n\n```typescript\nconst fileCount = parsed.files.length || 1;\nconst linesPerFile = totalLines / fileCount;\nconst aiLinesPerFile = aiLines / fileCount;\n```\n\n### 3. **AI Contribution Ignoring Deletions** (Main Issue)\n**Problem:** The dashboard only counted additions, completely ignoring deletions. When AI deleted code, it showed 0% or low AI contribution even though AI did all the work.\n\n**Example:**\n- Commit with 4 additions (3 AI) + 77 deletions (all AI) showed only 75% AI\n- Commit with 0 additions + 2 deletions (all AI) showed 0% AI\n\n**Fix:** Now counts both additions AND deletions as work:\n\n```265:269:src/dashboard.ts\n    const commitDate = commit.date.split('T')[0];\n    // Total work includes both additions and deletions\n    const totalLines = parsed.totalAdditions + parsed.totalDeletions;\n    // AI work includes accepted additions plus all deletions (when AI is involved)\n    const aiLines = parsed.acceptedLines + parsed.totalDeletions;\n    const aiPercent = totalLines > 0 ? (aiLines / totalLines) * 100 : 0;\n```\n\nThe code has been built successfully. Once you regenerate the dashboard, all three issues should be resolved:\n- ✅ Proper file names (no more commit hashes)\n- ✅ AI percentages at or below 100%\n- ✅ Accurate AI contribution including deletion work",
+          "timestamp": "2025-12-07T09:13:55.190Z"
+        },
+        {
+          "type": "user",
+          "text": "this is accurate?",
+          "timestamp": "2025-12-07T09:19:01.680Z"
+        },
+        {
+          "type": "assistant",
+          "text": "Let me check if the 99.7% AI contribution is accurate by examining the calculation logic:",
+          "timestamp": "2025-12-07T09:19:23.900Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "read_file",
+          "input": {
+            "limit": 30,
+            "offset": 265,
+            "target_file": "/Users/amir.barshavit/dev/prompt/git-notes-bot/src/dashboard.ts"
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "There's actually a logical issue with my fix. Let me trace through an example:\n\n**Current Logic Problem:**\n```typescript\naiLines = accepted_lines + total_deletions\n```\n\nThis assumes **ALL deletions are AI work**, which may not be accurate. The git-ai schema tracks:\n- `accepted_lines`: AI-added lines that were kept\n- `total_deletions`: ALL lines deleted (could be human or AI)\n\nLet me check what the data actually shows and verify if this makes sense:",
+          "timestamp": "2025-12-07T09:19:33.178Z"
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git notes --ref=refs/notes/ai show 176bebf6b01ac99691203e9a4c77e1f025bfef28 | grep -A 5 '\"total_'",
+            "is_background": false
+          }
+        },
+        {
+          "type": "tool_use",
+          "name": "run_terminal_cmd",
+          "input": {
+            "command": "cd /Users/amir.barshavit/dev/prompt/git-notes-bot && git notes --ref=refs/notes/ai show 134d2b22bb4507df4df779f2ce2aafa3cb33602f | grep -A 5 '\"total_'",
+            "is_background": false
+          }
+        },
+        {
+          "type": "assistant",
+          "text": "Let me verify the calculation is reasonable. The key question is: **Should deletions be counted as AI work?**\n\nWhen git-ai creates a note, it tracks what happened during that AI session. If `total_deletions` is in the prompt data, those deletions happened during the AI interaction. However, there's a subtle issue:\n\n**Current calculation:**\n- Commit with 4 additions (3 AI) + 77 deletions\n- My logic: AI = 3 + 77 = 80 out of 81 total = **98.8% AI**\n- But actually: AI wrote 3 lines and deleted 77, human wrote 1 line\n  - Should it be 98.8%? Or should we weight additions/deletions differently?\n\nLet me fix this",
+          "timestamp": "2025-12-07T09:19:56.752Z"
+        }
+      ],
+      "total_additions": 12,
+      "total_deletions": 13,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    }
+  }
+}

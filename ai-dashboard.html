@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Authorship Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .subtitle {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .stat-icon {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    
+    .stat-label {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    .stat-value {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .chart-container {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .chart-title {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: 600;
+    }
+    
+    .chart-wrapper {
+      position: relative;
+      height: 400px;
+    }
+    
+    .chart-wrapper.small {
+      height: 300px;
+    }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #666;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .badge-warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .badge-info {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+    }
+    
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 50px;
+      padding: 20px;
+      opacity: 0.8;
+    }
+    
+    .emoji {
+      font-style: normal;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2em;
+      }
+      
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      
+      .chart-wrapper {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🤖 AI Authorship Dashboard</h1>
+      <p class="subtitle">Repository - AI Code Contribution Analytics</p>
+    </header>
+    
+    <!-- Summary Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-label">Total Commits</div>
+        <div class="stat-value">24</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">📁</div>
+        <div class="stat-label">Files Modified</div>
+        <div class="stat-value">31</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">➕</div>
+        <div class="stat-label">Total Lines</div>
+        <div class="stat-value">2,745</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-label">AI Contribution</div>
+        <div class="stat-value">99.7%</div>
+      </div>
+    </div>
+    
+    <!-- Main Charts -->
+    <div class="chart-container">
+      <h2 class="chart-title">📈 Commit Activity Over Time</h2>
+      <div class="chart-wrapper">
+        <canvas id="timelineChart"></canvas>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <h2 class="chart-title">🎯 AI Acceptance Rate Timeline</h2>
+      <div class="chart-wrapper">
+        <canvas id="acceptanceChart"></canvas>
+      </div>
+    </div>
+    
+    <div class="grid-2">
+      <div class="chart-container">
+        <h2 class="chart-title">🧠 Model Usage</h2>
+        <div class="chart-wrapper small">
+          <canvas id="modelChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <h2 class="chart-title">🔧 Tool Distribution</h2>
+        <div class="chart-wrapper small">
+          <canvas id="toolChart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <h2 class="chart-title">👥 AI vs Human Contribution</h2>
+      <div class="chart-wrapper small">
+        <canvas id="contributionChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Tables -->
+    <div class="grid-2">
+      <div class="chart-container">
+        <h2 class="chart-title">🏆 Top AI Models</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Commits</th>
+              <th>Acceptance Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td><strong>claude-4.5-sonnet-thinking</strong></td>
+                <td>19</td>
+                <td>
+                  <span class="badge badge-success">
+                    99.7%
+                  </span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 99.7083485235144%"></div>
+                  </div>
+                </td>
+              </tr>
+            
+              <tr>
+                <td><strong>claude-opus-4-5-20251101</strong></td>
+                <td>2</td>
+                <td>
+                  <span class="badge badge-success">
+                    100.0%
+                  </span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                  </div>
+                </td>
+              </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="chart-container">
+        <h2 class="chart-title">📂 Most Modified Files</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Changes</th>
+              <th>AI %</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+                <tr>
+                  <td title="src/index.ts"><code>index.ts</code></td>
+                  <td>7</td>
+                  <td>
+                    <span class="badge badge-info">98%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="ae16f7e9b721cde0"><code>ae16f7e9b721cde0</code></td>
+                  <td>6</td>
+                  <td>
+                    <span class="badge badge-info">101%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="README.md"><code>README.md</code></td>
+                  <td>4</td>
+                  <td>
+                    <span class="badge badge-info">98%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="AI-NOTES-GUIDE.md"><code>AI-NOTES-GUIDE.md</code></td>
+                  <td>4</td>
+                  <td>
+                    <span class="badge badge-info">101%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="action.yml"><code>action.yml</code></td>
+                  <td>3</td>
+                  <td>
+                    <span class="badge badge-info">97%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="test.txt"><code>test.txt</code></td>
+                  <td>3</td>
+                  <td>
+                    <span class="badge badge-info">99%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="setup-auto-push-notes.sh"><code>setup-auto-push-notes.sh</code></td>
+                  <td>3</td>
+                  <td>
+                    <span class="badge badge-info">117%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="add-ai-note.sh"><code>add-ai-note.sh</code></td>
+                  <td>3</td>
+                  <td>
+                    <span class="badge badge-info">110%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="3d099ee320fed3f7"><code>3d099ee320fed3f7</code></td>
+                  <td>2</td>
+                  <td>
+                    <span class="badge badge-info">99%</span>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td title="d3ac4d12e93b00b6"><code>d3ac4d12e93b00b6</code></td>
+                  <td>2</td>
+                  <td>
+                    <span class="badge badge-info">99%</span>
+                  </td>
+                </tr>
+              
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    
+    <div class="chart-container">
+      <h2 class="chart-title">👤 Author Statistics</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Author</th>
+            <th>Commits</th>
+            <th>Total Lines</th>
+            <th>AI Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>Amir Barshavit <amir@prompt.security></strong></td>
+              <td>21</td>
+              <td>2,745</td>
+              <td>
+                <span class="badge badge-success">
+                  99.7%
+                </span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 99.70856102003644%"></div>
+                </div>
+              </td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+    
+    <div class="chart-container">
+      <h2 class="chart-title">⏱️ Recent AI-Assisted Commits</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>SHA</th>
+            <th>Author</th>
+            <th>Message</th>
+            <th>AI %</th>
+            <th>Model</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><code>9dba3ea</code></td>
+              <td>Amir Barshavit</td>
+              <td title="Add dashboard link to AI authorship reports">Add dashboard link to AI authorship reports</td>
+              <td>
+                <span class="badge badge-success">
+                  99%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>176bebf</code></td>
+              <td>Amir Barshavit</td>
+              <td title="Add text.txt with poem">Add text.txt with poem</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>cfa840f</code></td>
+              <td>Amir Barshavit</td>
+              <td title="add dashbaord">add dashbaord</td>
+              <td>
+                <span class="badge badge-info">
+                  0%
+                </span>
+              </td>
+              <td><small>N/A</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>9b5cb14</code></td>
+              <td>Amir Barshavit</td>
+              <td title="eeeee">eeeee</td>
+              <td>
+                <span class="badge badge-success">
+                  97%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>2c55f4f</code></td>
+              <td>Amir Barshavit</td>
+              <td title="sdsfasf">sdsfasf</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>7c39c7a</code></td>
+              <td>Amir Barshavit</td>
+              <td title="ssss">ssss</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>0b2b48e</code></td>
+              <td>Amir Barshavit</td>
+              <td title="fff">fff</td>
+              <td>
+                <span class="badge badge-success">
+                  99%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>ddb3d1d</code></td>
+              <td>Amir Barshavit</td>
+              <td title="asdadf">asdadf</td>
+              <td>
+                <span class="badge badge-success">
+                  175%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>f9fea0d</code></td>
+              <td>Amir Barshavit</td>
+              <td title="ui improve">ui improve</td>
+              <td>
+                <span class="badge badge-success">
+                  96%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>3a2289d</code></td>
+              <td>Amir Barshavit</td>
+              <td title="Add commit duration tracking from first change to commit">Add commit duration tracking from first change to ...</td>
+              <td>
+                <span class="badge badge-success">
+                  99%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>2842a56</code></td>
+              <td>Amir Barshavit</td>
+              <td title="ff">ff</td>
+              <td>
+                <span class="badge badge-success">
+                  91%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>47ed82d</code></td>
+              <td>Amir Barshavit</td>
+              <td title="aaaa">aaaa</td>
+              <td>
+                <span class="badge badge-success">
+                  99%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>3e43624</code></td>
+              <td>Amir Barshavit</td>
+              <td title="aaaa">aaaa</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>60d15ee</code></td>
+              <td>Amir Barshavit</td>
+              <td title="sssaadd">sssaadd</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>26ae688</code></td>
+              <td>Amir Barshavit</td>
+              <td title="feat: Add graphical AI authorship display with visual bars and statistics">feat: Add graphical AI authorship display with vis...</td>
+              <td>
+                <span class="badge badge-success">
+                  97%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>8708579</code></td>
+              <td>Amir Barshavit</td>
+              <td title="fffff">fffff</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>1a27c81</code></td>
+              <td>Amir Barshavit</td>
+              <td title="asdads">asdads</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>8f27e4c</code></td>
+              <td>Amir Barshavit</td>
+              <td title="rrr">rrr</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>34b5e52</code></td>
+              <td>Amir Barshavit</td>
+              <td title="ddd">ddd</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+            <tr>
+              <td><code>9a47a6a</code></td>
+              <td>Amir Barshavit</td>
+              <td title="test">test</td>
+              <td>
+                <span class="badge badge-success">
+                  100%
+                </span>
+              </td>
+              <td><small>claude-4.5-sonnet-thinking</small></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+    
+    <footer>
+      <p>Generated by <strong>git-notes-bot</strong> 🤖</p>
+      <p><small>Last updated: 12/7/2025, 10:41:12 AM</small></p>
+    </footer>
+  </div>
+  
+  <script>
+    // Chart.js configuration
+    Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    Chart.defaults.color = '#666';
+    
+    const chartColors = {
+      primary: '#667eea',
+      secondary: '#764ba2',
+      success: '#48bb78',
+      warning: '#ed8936',
+      danger: '#f56565',
+      info: '#4299e1'
+    };
+    
+    // Timeline Chart
+    new Chart(document.getElementById('timelineChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-12-04","2025-12-05","2025-12-07"],
+        datasets: [{
+          label: 'Commits',
+          data: [17,3,3],
+          borderColor: chartColors.primary,
+          backgroundColor: chartColors.primary + '20',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+    
+    // Acceptance Rate Chart
+    new Chart(document.getElementById('acceptanceChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-12-04","2025-12-05","2025-12-07"],
+        datasets: [{
+          label: 'AI Acceptance Rate (%)',
+          data: ["99.7","99.8","99.1"],
+          borderColor: chartColors.success,
+          backgroundColor: chartColors.success + '20',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    // Model Chart
+    new Chart(document.getElementById('modelChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["claude-4.5-sonnet-thinking","claude-opus-4-5-20251101"],
+        datasets: [{
+          data: [19,2],
+          backgroundColor: [
+            chartColors.primary,
+            chartColors.secondary,
+            chartColors.success,
+            chartColors.warning,
+            chartColors.info
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+    
+    // Tool Chart
+    new Chart(document.getElementById('toolChart'), {
+      type: 'pie',
+      data: {
+        labels: ["cursor","claude"],
+        datasets: [{
+          data: [19,2],
+          backgroundColor: [
+            chartColors.primary,
+            chartColors.success,
+            chartColors.warning,
+            chartColors.info
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+    
+    // Contribution Chart
+    new Chart(document.getElementById('contributionChart'), {
+      type: 'bar',
+      data: {
+        labels: ['AI Lines', 'Human Lines'],
+        datasets: [{
+          label: 'Lines of Code',
+          data: [2737, 8],
+          backgroundColor: [chartColors.primary, chartColors.success]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -22,6 +22,10 @@ inputs:
     description: 'Add inline review comments to AI-modified files in PR diff (default: false)'
     required: false
     default: 'false'
+  dashboard-url:
+    description: 'URL to the AI dashboard (optional, defaults to GitHub Pages URL)'
+    required: false
+    default: ''
 
 outputs:
   notes-found:

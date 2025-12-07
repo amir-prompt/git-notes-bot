@@ -1,2 +1,23 @@
-Commit created with Cursor AI assistance
-Timestamp: 2025-12-07 09:15:23 UTC
+src/dashboard.ts
+  07845fb9723bbada 187-188,267-270,273-277,284-285,291-292
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.0.22",
+  "base_commit_sha": "2a290b900a50ad9302e62e8d56b86b24bae07d1a",
+  "prompts": {
+    "07845fb9723bbada": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6104be8f-4471-412a-8e17-71170655340e",
+        "model": "claude-4.5-sonnet-thinking"
+      },
+      "human_author": "Amir Barshavit <amir@prompt.security>",
+      "messages": [],
+      "total_additions": 15,
+      "total_deletions": 8,
+      "accepted_lines": 15,
+      "overriden_lines": 0
+    }
+  }
+}

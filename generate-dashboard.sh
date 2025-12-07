@@ -17,7 +17,7 @@ fi
 
 # Default values
 OUTPUT="ai-dashboard.html"
-NOTES_REF="refs/notes/commits"
+NOTES_REF="refs/notes/ai"
 SINCE=""
 REPO_NAME=$(basename "$(git rev-parse --show-toplevel)")
 
@@ -45,7 +45,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  -o, --output <file>       Output HTML file (default: ai-dashboard.html)"
-            echo "  -n, --notes-ref <ref>     Git notes ref (default: refs/notes/commits)"
+            echo "  -n, --notes-ref <ref>     Git notes ref (default: refs/notes/ai)"
             echo "  -s, --since <date>        Only commits since date (e.g., '6 months ago')"
             echo "  -r, --repo-name <name>    Repository name for dashboard"
             echo "  -h, --help                Show this help"

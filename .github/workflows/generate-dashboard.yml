@@ -1,0 +1,104 @@
+name: Generate AI Dashboard
+
+on:
+  # Run on schedule (weekly)
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      since:
+        description: 'Only include commits since (e.g., "6 months ago")'
+        required: false
+        default: '1 year ago'
+  
+  # Run on push to main
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-dashboard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed to push to gh-pages branch
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for all commits
+      
+      - name: Fetch all git notes
+        run: |
+          git fetch origin 'refs/notes/*:refs/notes/*' || true
+          echo "✅ Git notes fetched"
+          git log --show-notes=refs/notes/commits --oneline -5 || echo "No notes found"
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build TypeScript
+        run: npm run build
+      
+      - name: Generate dashboard
+        run: |
+          SINCE="${{ github.event.inputs.since || '1 year ago' }}"
+          REPO_NAME="${{ github.repository }}"
+          
+          npx ts-node generate-dashboard.ts \
+            --output ai-dashboard.html \
+            --since "$SINCE" \
+            --repo-name "$REPO_NAME"
+      
+      - name: Upload dashboard as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-dashboard
+          path: ai-dashboard.html
+          retention-days: 90
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          keep_files: false
+          enable_jekyll: false
+          destination_dir: .
+          force_orphan: true
+          commit_message: "Update AI Dashboard - ${{ github.event.head_commit.message || 'Manual trigger' }}"
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+      
+      - name: Comment on commit
+        if: github.event_name == 'push'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read dashboard file to get stats
+            const dashboardExists = fs.existsSync('ai-dashboard.html');
+            
+            if (dashboardExists) {
+              const repoUrl = context.payload.repository.html_url;
+              const dashboardUrl = `https://${context.repo.owner}.github.io/${context.repo.repo}/ai-dashboard.html`;
+              
+              github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+                body: `## 🤖 AI Dashboard Updated!\n\n📊 View the latest AI authorship statistics: [AI Dashboard](${dashboardUrl})\n\n*Dashboard will be available in a few minutes after GitHub Pages deployment completes.*`
+              });
+            }
+

@@ -364,6 +364,41 @@ EOF
     fi
 }
 
+build_action() {
+    print_header "Building GitHub Action"
+
+    # Check if we're in the git-notes-bot directory
+    if [ ! -f "package.json" ]; then
+        print_info "Not in git-notes-bot directory, skipping action build"
+        return 0
+    fi
+
+    # Check for Node.js and npm
+    if ! command -v node &> /dev/null; then
+        print_warning "Node.js not found, skipping action build"
+        print_info "Install Node.js to build the action: https://nodejs.org/"
+        return 0
+    fi
+
+    if ! command -v npm &> /dev/null; then
+        print_warning "npm not found, skipping action build"
+        return 0
+    fi
+
+    print_info "Installing dependencies..."
+    npm install
+
+    print_info "Building action with bundled dependencies..."
+    npm run build
+
+    if [ -f "dist/index.js" ]; then
+        print_success "Action built successfully with bundled dependencies"
+    else
+        print_error "Action build failed"
+        return 1
+    fi
+}
+
 install_github_actions() {
     print_header "Installing GitHub Actions Workflows"
 
@@ -428,8 +463,25 @@ jobs:
         run: |
           git fetch origin 'refs/notes/*:refs/notes/*' || true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Checkout action repository
+        uses: actions/checkout@v4
+        with:
+          repository: amir-prompt/git-notes-bot
+          ref: main
+          path: .action
+
+      - name: Install action dependencies
+        run: |
+          cd .action
+          npm ci --production
+
       - name: Post Git Notes
-        uses: amir-prompt/git-notes-bot@main
+        uses: ./.action
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           notes-ref: 'refs/notes/commits'
@@ -460,7 +512,13 @@ on:
         default: ''
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   generate-dashboard:
@@ -480,22 +538,47 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install git-notes-bot
-        run: npm install -g git-notes-bot || npx git-notes-bot --version || true
+      - name: Checkout git-notes-bot
+        uses: actions/checkout@v4
+        with:
+          repository: amir-prompt/git-notes-bot
+          ref: main
+          path: .git-notes-bot
+
+      - name: Install git-notes-bot dependencies
+        run: |
+          cd .git-notes-bot
+          npm ci
 
       - name: Generate dashboard
         run: |
-          npx git-notes-bot dashboard --output ai-dashboard.html
+          cd .git-notes-bot
+          # Link to parent repo's .git so git commands work
+          rm -rf .git
+          ln -s ../.git .git
+          # Generate dashboard in parent directory
+          npx ts-node generate-dashboard.ts --output ../ai-dashboard.html
+          # Cleanup symlink
+          rm .git
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
-          keep_files: true
-          destination_dir: .
-          enable_jekyll: false
+          path: '.'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: generate-dashboard
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 EOF
 
     print_success "Created generate-dashboard.yml workflow"
@@ -546,11 +629,20 @@ main() {
         print_info "Skipping Cursor configuration (--skip-cursor)"
     fi
 
+    # Build the action
+    build_action
+
     # Install GitHub Actions
     if [ "$SKIP_ACTIONS" = false ]; then
         install_github_actions
     else
         print_info "Skipping GitHub Actions installation (--skip-actions)"
+    fi
+
+    # Make dashboard generation script executable if it exists
+    if [ -f "generate-dashboard.sh" ]; then
+        chmod +x generate-dashboard.sh
+        print_success "Dashboard generation script is ready"
     fi
 
     # Final summary
@@ -568,6 +660,11 @@ main() {
     echo "  2. Push to GitHub to enable the workflows"
     echo "  3. Make commits using 'git-ai commit' or regular 'git commit'"
     echo "  4. Open a PR to see AI participation comments"
+    echo ""
+    echo "Generate AI Dashboard:"
+    echo "  • Locally: ./generate-dashboard.sh"
+    echo "  • Or use: npm run dashboard"
+    echo "  • With time range: npm run dashboard -- --since '6 months ago'"
     echo ""
     echo "To uninstall:"
     echo "  ./install.sh --uninstall"

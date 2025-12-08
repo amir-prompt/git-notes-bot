@@ -11,6 +11,7 @@
 #   2. Post-commit hook - Automatically adds AI participation notes to commits
 #   3. Post-push hook - Automatically syncs git notes to GitHub after pushes
 #   4. Cursor rules - Configuration for Cursor AI editor
+#   5. GitHub Actions - Workflows for PR comments and dashboard generation
 #
 # Usage:
 #   ./install.sh [options]
@@ -19,6 +20,7 @@
 #   --skip-git-ai     Skip git-ai installation
 #   --skip-hooks      Skip git hooks installation
 #   --skip-cursor     Skip Cursor configuration
+#   --skip-actions    Skip GitHub Actions installation
 #   --uninstall       Remove all installed components
 #   -h, --help        Show this help message
 #
@@ -45,6 +47,7 @@ ALT_NOTES_REF="refs/notes/ai"   # Alternative namespace
 SKIP_GIT_AI=false
 SKIP_HOOKS=false
 SKIP_CURSOR=false
+SKIP_ACTIONS=false
 UNINSTALL=false
 
 while [[ $# -gt 0 ]]; do
@@ -59,6 +62,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --skip-cursor)
             SKIP_CURSOR=true
+            shift
+            ;;
+        --skip-actions)
+            SKIP_ACTIONS=true
             shift
             ;;
         --uninstall)
@@ -142,6 +149,16 @@ uninstall() {
     if [ -f ".cursorrules" ]; then
         print_warning ".cursorrules file was not removed (may contain custom rules)"
         print_info "To remove: rm .cursorrules"
+    fi
+
+    # Remove GitHub Actions workflows
+    if [ -f ".github/workflows/git-notes-comment.yml" ]; then
+        rm -f ".github/workflows/git-notes-comment.yml"
+        print_success "Removed git-notes-comment.yml workflow"
+    fi
+    if [ -f ".github/workflows/generate-dashboard.yml" ]; then
+        rm -f ".github/workflows/generate-dashboard.yml"
+        print_success "Removed generate-dashboard.yml workflow"
     fi
 
     echo ""
@@ -347,6 +364,226 @@ EOF
     fi
 }
 
+build_action() {
+    print_header "Building GitHub Action"
+
+    # Check if we're in the git-notes-bot directory
+    if [ ! -f "package.json" ]; then
+        print_info "Not in git-notes-bot directory, skipping action build"
+        return 0
+    fi
+
+    # Check for Node.js and npm
+    if ! command -v node &> /dev/null; then
+        print_warning "Node.js not found, skipping action build"
+        print_info "Install Node.js to build the action: https://nodejs.org/"
+        return 0
+    fi
+
+    if ! command -v npm &> /dev/null; then
+        print_warning "npm not found, skipping action build"
+        return 0
+    fi
+
+    print_info "Installing dependencies..."
+    npm install
+
+    print_info "Building action with bundled dependencies..."
+    npm run build
+
+    if [ -f "dist/index.js" ]; then
+        print_success "Action built successfully with bundled dependencies"
+    else
+        print_error "Action build failed"
+        return 1
+    fi
+}
+
+install_github_actions() {
+    print_header "Installing GitHub Actions Workflows"
+
+    # Create .github/workflows directory if it doesn't exist
+    mkdir -p .github/workflows
+
+    # Install git-notes-comment.yml workflow
+    WORKFLOW_FILE=".github/workflows/git-notes-comment.yml"
+    if [ -f "$WORKFLOW_FILE" ]; then
+        print_warning "git-notes-comment.yml already exists"
+        read -p "Overwrite? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_info "Skipping git-notes-comment.yml"
+        else
+            create_git_notes_workflow
+        fi
+    else
+        create_git_notes_workflow
+    fi
+
+    # Install generate-dashboard.yml workflow
+    WORKFLOW_FILE=".github/workflows/generate-dashboard.yml"
+    if [ -f "$WORKFLOW_FILE" ]; then
+        print_warning "generate-dashboard.yml already exists"
+        read -p "Overwrite? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_info "Skipping generate-dashboard.yml"
+        else
+            create_dashboard_workflow
+        fi
+    else
+        create_dashboard_workflow
+    fi
+}
+
+create_git_notes_workflow() {
+    print_info "Creating git-notes-comment.yml workflow..."
+
+    cat > ".github/workflows/git-notes-comment.yml" << 'EOF'
+name: Post Git Notes to PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  post-notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch git notes
+        run: |
+          git fetch origin 'refs/notes/*:refs/notes/*' || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Checkout action repository
+        uses: actions/checkout@v4
+        with:
+          repository: amir-prompt/git-notes-bot
+          ref: main
+          path: .action
+
+      - name: Install action dependencies
+        run: |
+          cd .action
+          npm ci --production
+
+      - name: Post Git Notes
+        uses: ./.action
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          notes-ref: 'refs/notes/commits'
+          update-existing: 'true'
+          add-inline-comments: 'false'
+EOF
+
+    print_success "Created git-notes-comment.yml workflow"
+}
+
+create_dashboard_workflow() {
+    print_info "Creating generate-dashboard.yml workflow..."
+
+    cat > ".github/workflows/generate-dashboard.yml" << 'EOF'
+name: Generate AI Dashboard
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Run every Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    inputs:
+      since:
+        description: 'Time range (e.g., "6 months ago")'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  generate-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all git notes
+        run: |
+          git fetch origin 'refs/notes/*:refs/notes/*' || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Checkout git-notes-bot
+        uses: actions/checkout@v4
+        with:
+          repository: amir-prompt/git-notes-bot
+          ref: main
+          path: .git-notes-bot
+
+      - name: Install git-notes-bot dependencies
+        run: |
+          cd .git-notes-bot
+          npm ci
+
+      - name: Generate dashboard
+        run: |
+          cd .git-notes-bot
+          # Link to parent repo's .git so git commands work
+          rm -rf .git
+          ln -s ../.git .git
+          # Generate dashboard in parent directory
+          npx ts-node generate-dashboard.ts --output ../ai-dashboard.html
+          # Cleanup symlink
+          rm .git
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: generate-dashboard
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+EOF
+
+    print_success "Created generate-dashboard.yml workflow"
+}
+
 ################################################################################
 # Main Installation
 ################################################################################
@@ -359,6 +596,7 @@ main() {
     echo "  • post-commit hook - Adds AI participation notes"
     echo "  • post-push hook - Auto-syncs notes to GitHub"
     echo "  • Cursor configuration - .cursorrules file"
+    echo "  • GitHub Actions - PR comments and dashboard workflows"
     echo ""
 
     # Check we're in a git repo
@@ -391,6 +629,22 @@ main() {
         print_info "Skipping Cursor configuration (--skip-cursor)"
     fi
 
+    # Build the action
+    build_action
+
+    # Install GitHub Actions
+    if [ "$SKIP_ACTIONS" = false ]; then
+        install_github_actions
+    else
+        print_info "Skipping GitHub Actions installation (--skip-actions)"
+    fi
+
+    # Make dashboard generation script executable if it exists
+    if [ -f "generate-dashboard.sh" ]; then
+        chmod +x generate-dashboard.sh
+        print_success "Dashboard generation script is ready"
+    fi
+
     # Final summary
     print_header "Installation Complete!"
 
@@ -399,11 +653,18 @@ main() {
     echo "  🪝 post-commit hook - Auto-adds AI notes to commits"
     echo "  🪝 post-push hook - Auto-syncs notes to GitHub"
     echo "  📝 .cursorrules - Cursor AI configuration"
+    echo "  🤖 GitHub Actions - PR comments and dashboard generation"
     echo ""
     echo "Next steps:"
-    echo "  1. Make a commit using 'git-ai commit -m \"message\"' or regular 'git commit'"
-    echo "  2. Push your changes - notes will sync automatically"
-    echo "  3. Open a PR to see AI participation comments"
+    echo "  1. Commit the new workflow files: git add .github/workflows && git commit"
+    echo "  2. Push to GitHub to enable the workflows"
+    echo "  3. Make commits using 'git-ai commit' or regular 'git commit'"
+    echo "  4. Open a PR to see AI participation comments"
+    echo ""
+    echo "Generate AI Dashboard:"
+    echo "  • Locally: ./generate-dashboard.sh"
+    echo "  • Or use: npm run dashboard"
+    echo "  • With time range: npm run dashboard -- --since '6 months ago'"
     echo ""
     echo "To uninstall:"
     echo "  ./install.sh --uninstall"
